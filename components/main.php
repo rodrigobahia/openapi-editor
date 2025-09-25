@@ -1044,8 +1044,6 @@ function clearAllContainers() {
 }
 
 function serializeDataBeforeSubmit(form) {
-    console.log('serializeDataBeforeSubmit chamada para main/paths');
-    
     try {
         const endpoints = document.querySelectorAll('.endpoint-item');
         const pathsData = {};
@@ -1071,8 +1069,6 @@ function serializeDataBeforeSubmit(form) {
             }
         });
         
-        console.log('Dados dos paths serializados:', pathsData);
-        
         // Adicionar campo hidden com dados serializados
         let hiddenInput = form.querySelector('input[name="paths"]');
         if (!hiddenInput) {
@@ -1082,12 +1078,9 @@ function serializeDataBeforeSubmit(form) {
             form.appendChild(hiddenInput);
         }
         hiddenInput.value = JSON.stringify(pathsData);
-        
-        console.log('Campo hidden paths adicionado/atualizado');
         return true;
         
     } catch (error) {
-        console.error('Erro ao serializar dados dos paths:', error);
         return false;
     }
 }
@@ -1187,8 +1180,6 @@ function updateOpenAPIData(method, path, summary, description, tags) {
     if (window.mainEditor && window.mainEditor.currentSpec) {
         window.mainEditor.currentSpec.paths = window.openApiSpec.paths;
     }
-    
-    console.log('OpenAPI data updated:', window.openApiSpec);
 }
 
 function createEndpointHtml(method, path, summary, description, tags) {

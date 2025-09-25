@@ -1,7 +1,6 @@
 // Função global para serializar dados de qualquer seção antes do submit
 function serializeDataBeforeSubmit(form) {
     const section = form.querySelector('input[name="section"]')?.value;
-    console.log('=== Serializando dados da seção:', section, '===');
     
     try {
         switch (section) {
@@ -16,11 +15,9 @@ function serializeDataBeforeSubmit(form) {
             case 'security':
                 return serializeSecurityData(form);
             default:
-                console.log('Seção não reconhecida, permitindo submit padrão');
                 return true;
         }
     } catch (e) {
-        console.error('Erro na serialização:', e);
         alert('Erro ao preparar dados para salvamento: ' + e.message);
         return false;
     }
@@ -29,24 +26,15 @@ function serializeDataBeforeSubmit(form) {
 // Função específica para serializar endpoints (antiga função)
 function serializePathsBeforeSubmit() {
     try {
-        console.log('=== Iniciando serialização dos endpoints ===');
-        console.log('window.mainEditor:', window.mainEditor);
-        console.log('window.openApiSpec:', window.openApiSpec);
-        
         let paths;
         if (window.mainEditor && typeof window.mainEditor.getCurrentPaths === 'function') {
             paths = window.mainEditor.getCurrentPaths();
-            console.log('Paths do mainEditor:', paths);
         } else if (window.openApiSpec && window.openApiSpec.paths) {
             paths = window.openApiSpec.paths;
-            console.log('Paths do openApiSpec global:', paths);
         } else {
-            console.error('Não foi possível encontrar os endpoints para serializar.');
-            console.log('Tentando buscar paths de outras fontes...');
             // Tentar buscar do DOM como fallback
             paths = {};
             const endpointElements = document.querySelectorAll('.endpoint-group');
-            console.log('Elementos de endpoint encontrados no DOM:', endpointElements.length);
             endpointElements.forEach(elem => {
                 const path = elem.getAttribute('data-path');
                 const method = elem.getAttribute('data-method');
@@ -58,24 +46,18 @@ function serializePathsBeforeSubmit() {
                     };
                 }
             });
-            console.log('Paths extraídos do DOM:', paths);
         }
         
         const pathsField = document.getElementById('paths-json');
         if (!pathsField) {
-            console.error('Campo oculto paths-json não encontrado no formulário.');
             alert('Erro interno: campo de dados não encontrado.');
             return false;
         }
         
         const pathsJson = JSON.stringify(paths);
         pathsField.value = pathsJson;
-        console.log('JSON serializado:', pathsJson);
-        console.log('Campo paths-json preenchido com:', pathsField.value);
-        console.log('=== Serialização concluída com sucesso ===');
         return true;
     } catch (e) {
-        console.error('Erro ao serializar endpoints:', e);
         alert('Erro ao salvar endpoints: ' + e.message);
         return false;
     }
@@ -83,35 +65,21 @@ function serializePathsBeforeSubmit() {
 
 // Funções de serialização por seção
 function serializeHeaderData(form) {
-    console.log('Serializando dados do header');
     // Os dados do header já são enviados pelos campos do formulário
     // Não precisa de serialização especial
     return true;
 }
 
 function serializeTagsData(form) {
-    console.log('=== Serializando dados das tags ===');
-    
-    // Debug: verificar elementos encontrados
     const tagItems = document.querySelectorAll('.tag-item');
-    console.log('Tag items encontrados:', tagItems.length);
-    
     const tags = [];
+    
     tagItems.forEach((item, index) => {
-        console.log(`Processando tag item ${index + 1}:`);
-        
         // Buscar inputs de forma mais específica
         const nameInput = item.querySelector('input[name*="[name]"]') || item.querySelector('input[type="text"]');
         const descInput = item.querySelector('input[name*="[description]"]');
         const urlInput = item.querySelector('input[name*="[externalDocs][url]"]') || item.querySelector('input[type="url"]');
         const docDescInput = item.querySelector('input[name*="[externalDocs][description]"]:last-of-type');
-        
-        console.log('Campos encontrados:', {
-            nameInput: nameInput?.name,
-            nameValue: nameInput?.value,
-            descInput: descInput?.name,
-            descValue: descInput?.value
-        });
         
         const name = nameInput?.value?.trim();
         if (name) {
@@ -131,9 +99,6 @@ function serializeTagsData(form) {
             }
             
             tags.push(tag);
-            console.log(`Tag ${index + 1} adicionada:`, tag);
-        } else {
-            console.log(`Tag ${index + 1} ignorada - nome vazio`);
         }
     });
     
@@ -143,26 +108,19 @@ function serializeTagsData(form) {
         tagsField.type = 'hidden';
         tagsField.name = 'tags_data';
         form.appendChild(tagsField);
-        console.log('Campo oculto tags_data criado');
     }
     
     const tagsJson = JSON.stringify(tags);
     tagsField.value = tagsJson;
     
-    console.log('JSON final das tags:', tagsJson);
-    console.log('Campo tags_data preenchido:', tagsField.value);
-    console.log('=== Serialização de tags concluída ===');
-    
     return true;
 }
 
 function serializePathsData(form) {
-    console.log('Serializando dados dos paths');
     return serializePathsBeforeSubmit();
 }
 
 function serializeServersData(form) {
-    console.log('Serializando dados dos servers');
     // Coletar servidores da interface e serializar
     const servers = [];
     document.querySelectorAll('.server-item').forEach(item => {
@@ -181,12 +139,10 @@ function serializeServersData(form) {
         form.appendChild(serversField);
     }
     serversField.value = JSON.stringify(servers);
-    console.log('Servers serializados:', servers);
     return true;
 }
 
 function serializeSecurityData(form) {
-    console.log('Serializando dados de segurança');
     // Implementar quando necessário
     return true;
 }
@@ -425,7 +381,6 @@ class MainEditorFeatures {
                 try {
                     this.currentSpec = JSON.parse(editorContent);
                 } catch (e) {
-                    console.warn('Could not parse editor content as JSON');
                     this.currentSpec = this.getDefaultSpec();
                 }
             } else {
@@ -701,7 +656,6 @@ class MainEditorFeatures {
         };
 
         this.showNotification('External documentation saved successfully!', 'success');
-        console.log('External docs saved:', this.currentSpec.externalDocs);
     }
 
     /**
@@ -761,8 +715,6 @@ class MainEditorFeatures {
                 this.handleTabSwitch(e.target);
             }
         });
-
-        console.log('📎 Event handlers bound successfully');
     }
 
     /**
@@ -805,11 +757,9 @@ class MainEditorFeatures {
                 detail: this.currentSpec
             }));
             
-            console.log('💾 Specification saved:', this.currentSpec);
             return this.currentSpec;
             
         } catch (error) {
-            console.error('Save failed:', error);
             if (showNotification) {
                 this.showNotification('Failed to save specification', 'error');
             }
@@ -825,7 +775,7 @@ class MainEditorFeatures {
             this.saveCurrentSpec(false); // Silent save
             this.showNotification('Changes auto-saved', 'success', 2000);
         } catch (error) {
-            console.warn('Auto-save failed:', error);
+            // Auto-save failed silently
         }
     }
 
@@ -855,7 +805,6 @@ class MainEditorFeatures {
      */
     handleTabSwitch(tabElement) {
         const target = tabElement.getAttribute('data-bs-target') || tabElement.getAttribute('href');
-        console.log(`Switching to tab: ${target}`);
         
         // Save current state before switching
         this.saveCurrentState();

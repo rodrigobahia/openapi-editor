@@ -19,10 +19,6 @@ if (!$openApiData) {
 // Processar salvamento
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
     $section = $_POST['section'];
-    error_log("=== DEBUG SALVAMENTO ===");
-    error_log("Seção: " . $section);
-    error_log("POST data: " . print_r($_POST, true));
-
     $saved = false;
 
     switch ($section) {
@@ -65,13 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
         case 'main':
             // Processar dados dos endpoints
             if (isset($_POST['paths'])) {
-                error_log("Campo paths recebido: " . $_POST['paths']);
                 $decodedPaths = json_decode($_POST['paths'], true);
                 if (json_last_error() === JSON_ERROR_NONE) {
                     $openApiData['paths'] = $decodedPaths;
                     $saved = true;
-                } else {
-                    error_log("Erro ao decodificar JSON paths: " . json_last_error_msg());
                 }
             }
             break;
@@ -100,14 +93,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
             break;
 
         default:
-            error_log("Seção desconhecida: " . $section);
             break;
     }
 
     if ($saved) {
         // Salva no arquivo JSON
         $result = file_put_contents(__DIR__ . '/files/' . $filename, json_encode($openApiData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        error_log("Resultado da gravação: " . ($result ? 'sucesso' : 'falha'));
 
         if ($result) {
             $message = ucfirst($section) . ' salvo com sucesso!';
@@ -119,7 +110,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
             $messageType = 'danger';
         }
     } else {
-        error_log("Nenhum dado válido encontrado para salvar na seção: " . $section);
         $message = 'Nenhum dado para salvar ou dados inválidos.';
         $messageType = 'warning';
     }
@@ -758,10 +748,7 @@ $currentSection = $_GET['section'] ?? 'header';
                                 this.disabled = false;
                             }, 2000);
 
-                            console.error('Save error:', error);
                         });
-
-                    console.log('Saving section:', window.currentSection);
                 });
             }
         }
@@ -792,17 +779,7 @@ $currentSection = $_GET['section'] ?? 'header';
                     dropdown.disabled = false;
                 }, 1500);
             }, 800);
-
-            console.log(`Exporting ${window.currentFile} as ${format.toUpperCase()}`);
         }
-
-        // Development logging
-        <?php if (APP_DEBUG): ?>
-            console.log('📝 OpenAPI Editor loaded');
-            console.log('📁 Current file:', window.currentFile);
-            console.log('📋 Current section:', window.currentSection);
-            console.log('⚙️ Config:', window.AppConfig);
-        <?php endif; ?>
     </script>
 </body>
 

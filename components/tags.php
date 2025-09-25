@@ -166,29 +166,14 @@ function updateTagNumbers() {
 
 // Função específica para serializar tags (incluída diretamente no componente)
 function serializeTagsData() {
-    console.log('=== Serializando dados das tags ===');
-    
     const tagItems = document.querySelectorAll('.tag-item');
-    console.log('Tag items encontrados:', tagItems.length);
-    
     const tags = [];
+    
     tagItems.forEach((item, index) => {
-        console.log(`Processando tag item ${index + 1}:`);
-        
-        const inputs = item.querySelectorAll('input[type="text"], input[type="url"]');
-        console.log('Inputs encontrados:', inputs.length);
-        
         const nameInput = item.querySelector('input[name*="[name]"]');
         const descInput = item.querySelector('input[name*="[description]"]');
         const urlInput = item.querySelector('input[name*="[url]"]');
         const docDescInput = item.querySelector('input[name*="[externalDocs][description]"]');
-        
-        console.log('Campos:', {
-            nameInput: nameInput?.name,
-            nameValue: nameInput?.value,
-            descInput: descInput?.name,
-            descValue: descInput?.value
-        });
         
         const name = nameInput?.value?.trim();
         if (name) {
@@ -208,7 +193,6 @@ function serializeTagsData() {
             }
             
             tags.push(tag);
-            console.log(`Tag ${index + 1} adicionada:`, tag);
         }
     });
     
@@ -219,15 +203,10 @@ function serializeTagsData() {
         tagsField.type = 'hidden';
         tagsField.name = 'tags_data';
         form.appendChild(tagsField);
-        console.log('Campo oculto tags_data criado');
     }
     
     const tagsJson = JSON.stringify(tags);
     tagsField.value = tagsJson;
-    
-    console.log('JSON final das tags:', tagsJson);
-    console.log('Campo preenchido:', tagsField.value);
-    console.log('=== Serialização concluída ===');
     
     return true;
 }
@@ -235,7 +214,6 @@ function serializeTagsData() {
 // Sobrescrever a função global se existir
 function serializeDataBeforeSubmit(form) {
     const section = form.querySelector('input[name="section"]')?.value;
-    console.log('Serializando seção:', section);
     
     if (section === 'tags') {
         return serializeTagsData();

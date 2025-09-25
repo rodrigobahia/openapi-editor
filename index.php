@@ -548,11 +548,7 @@ $files = getOpenAPIFiles();
       }
     }
 
-    // Development logging
-    <?php if (APP_DEBUG): ?>
-      console.log('🏠 OpenAPI Editor Home Page loaded');
-      console.log('⚙️ Config:', window.AppConfig);
-    <?php endif; ?>
+
   </script>
 </body>
 </html>
