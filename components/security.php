@@ -23,7 +23,7 @@ $securitySchemes = $openApiData['components']['securitySchemes'] ?? [];
                     Configure os esquemas de autenticação que sua API utiliza. Defina como os usuários devem se autenticar para acessar os endpoints protegidos.
                 </div>
                 
-                <form method="POST" id="security-form">
+                <form method="POST" id="security-form" onsubmit="return serializeSecurityBeforeSubmit(this);">
                     <input type="hidden" name="save_section" value="1">
                     <input type="hidden" name="section" value="security">
                     
@@ -247,6 +247,60 @@ function isGlobalSecurityEnabled($security, $schemeName) {
 </div>
 
 <script>
+function serializeSecurityBeforeSubmit(form) {
+    // Serializa todos os esquemas de segurança presentes no DOM
+    const schemeItems = document.querySelectorAll('.security-scheme-item');
+    const schemes = {};
+    schemeItems.forEach(item => {
+        const name = item.getAttribute('data-scheme-name');
+        if (!name) return;
+        // Buscar detalhes do esquema
+        const details = {};
+        // Tipo
+        const badge = item.querySelector('.badge');
+        if (badge) {
+            details.type = badge.textContent.trim().toLowerCase();
+        }
+        // Descrição
+        const descEl = item.querySelector('p.text-muted');
+        if (descEl) {
+            details.description = descEl.textContent.trim();
+        }
+        // Detalhes específicos
+        const detailsEl = item.querySelector('.scheme-details');
+        if (detailsEl) {
+            // Parse simples: busca por labels e valores
+            const text = detailsEl.textContent;
+            if (details.type === 'apikey') {
+                const nomeMatch = text.match(/Nome:\s*(\S+)/);
+                const inMatch = text.match(/Localização:\s*(\S+)/);
+                if (nomeMatch) details.name = nomeMatch[1];
+                if (inMatch) details.in = inMatch[1].toLowerCase();
+            } else if (details.type === 'http') {
+                const esquemaMatch = text.match(/Esquema:\s*(\S+)/);
+                if (esquemaMatch) details.scheme = esquemaMatch[1].toLowerCase();
+                const formatoMatch = text.match(/Formato:\s*(\S+)/);
+                if (formatoMatch) details.bearerFormat = formatoMatch[1];
+            } else if (details.type === 'oauth2') {
+                // Fluxos não são extraídos do preview, mas podem ser implementados se necessário
+            } else if (details.type === 'openidconnect') {
+                const urlMatch = text.match(/URL:\s*(\S+)/);
+                if (urlMatch) details.openIdConnectUrl = urlMatch[1];
+            }
+        }
+        schemes[name] = details;
+    });
+    // Adiciona campo hidden
+    let hiddenInput = form.querySelector('input[name="security_schemes"]');
+    if (!hiddenInput) {
+        hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'security_schemes';
+        form.appendChild(hiddenInput);
+    }
+    hiddenInput.value = JSON.stringify(schemes);
+    return true;
+}
 let currentScheme = null;
 
 function updateSchemeFields() {
