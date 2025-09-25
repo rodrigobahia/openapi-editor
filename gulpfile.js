@@ -9,7 +9,6 @@ const rename = require('gulp-rename');
 const plumber = require('gulp-plumber');
 const notify = require('gulp-notify');
 const browserSync = require('browser-sync').create();
-const { deleteSync } = require('del');
 
 // Caminhos dos arquivos
 const paths = {
@@ -40,9 +39,9 @@ const paths = {
 };
 
 // Limpar diretório dist
-function clean(done) {
+async function clean() {
+  const { deleteSync } = await import('del');
   deleteSync(['assets/dist/**/*']);
-  done();
 }
 
 // Compilar SCSS

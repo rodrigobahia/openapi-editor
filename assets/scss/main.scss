@@ -50,3 +50,11 @@
 @import 'utilities/spacing';
 @import 'utilities/display';
 @import 'utilities/colors';
+
+footer{
+  img{
+    height:22px;
+    vertical-align:middle;
+    margin: -5px 0 0 6px;
+  }
+}

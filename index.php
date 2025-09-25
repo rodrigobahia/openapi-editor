@@ -235,9 +235,9 @@ $files = getOpenAPIFiles();
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#documentation">
-              <i class="fas fa-book me-1"></i>
-              <?php echo t('documentation'); ?>
+            <a class="nav-link" href="https://github.com/rodrigobahia/openapi-editor" target="_blank">
+              <i class="fas fa-github me-1"></i>
+              Github
             </a>
           </li>
         </ul>
@@ -560,5 +560,13 @@ $files = getOpenAPIFiles();
 
 
   </script>
+
+  <!-- Footer -->
+  <footer class="text-center py-4 bg-light mt-5 border-top">
+    <span class="fw-semibold" style="color:#888;">
+      Desenvolvido com <span style="color:#e25555">&#10084;&#65039;</span> por Rodrigo Bahia
+      <a href="https://myrotech.com" target="_blank"><img src="assets/images/myrotech.png" alt="Myrotech"></a>
+    </span>
+  </footer>
 </body>
 </html>
