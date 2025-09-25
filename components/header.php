@@ -13,7 +13,7 @@ $info = $openApiData['info'] ?? [];
                 </h5>
             </div>
             <div class="card-body">
-                <form method="POST">
+                <form method="POST" onsubmit="return serializeDataBeforeSubmit(this);">
                     <input type="hidden" name="save_section" value="1">
                     <input type="hidden" name="section" value="header">
                     

@@ -37,9 +37,10 @@ $paths = $openApiData['paths'] ?? new stdClass();
                     Esta é a seção principal onde você define todos os endpoints da sua API. Cada endpoint representa uma operação que sua API pode realizar.
                 </div>
                 
-                <form method="POST" id="paths-form">
+                <form method="POST" id="paths-form" onsubmit="return serializeDataBeforeSubmit(this);">
                     <input type="hidden" name="save_section" value="1">
                     <input type="hidden" name="section" value="main">
+                    <input type="hidden" name="paths" id="paths-json">
                     
                     <div id="endpoints-container">
                         <?php if (empty((array)$paths)): ?>
@@ -1055,6 +1056,9 @@ function saveEndpoint() {
         return;
     }
     
+    // Atualizar estrutura de dados OpenAPI
+    updateOpenAPIData(method, path, summary, description, tags);
+    
     // Criar elemento do endpoint
     const endpointHtml = createEndpointHtml(method, path, summary, description, tags);
     
@@ -1081,6 +1085,61 @@ function saveEndpoint() {
     // Mostrar mensagem de sucesso
     const action = currentEndpoint ? 'atualizado' : 'adicionado';
     showSuccessMessage(`Endpoint ${action} com sucesso!`);
+}
+
+// Função para atualizar a estrutura de dados OpenAPI
+function updateOpenAPIData(method, path, summary, description, tags) {
+    // Inicializar estrutura global se não existir
+    if (!window.openApiSpec) {
+        window.openApiSpec = {
+            openapi: "3.0.3",
+            info: { title: "API", version: "1.0.0" },
+            paths: {}
+        };
+    }
+    
+    if (!window.openApiSpec.paths) {
+        window.openApiSpec.paths = {};
+    }
+    
+    // Adicionar ou atualizar o path
+    if (!window.openApiSpec.paths[path]) {
+        window.openApiSpec.paths[path] = {};
+    }
+    
+    // Criar objeto da operação
+    const operation = {
+        summary: summary,
+        operationId: path.replace(/[^a-zA-Z0-9]/g, '_') + '_' + method
+    };
+    
+    if (description) {
+        operation.description = description;
+    }
+    
+    if (tags) {
+        const tagsArray = tags.split(',').map(t => t.trim()).filter(t => t);
+        if (tagsArray.length > 0) {
+            operation.tags = tagsArray;
+        }
+    }
+    
+    // Adicionar responses padrão
+    operation.responses = {
+        "200": {
+            "description": "Successful response"
+        }
+    };
+    
+    // Salvar a operação no método especificado
+    window.openApiSpec.paths[path][method.toLowerCase()] = operation;
+    
+    // Atualizar mainEditor se existir
+    if (window.mainEditor && window.mainEditor.currentSpec) {
+        window.mainEditor.currentSpec.paths = window.openApiSpec.paths;
+    }
+    
+    console.log('OpenAPI data updated:', window.openApiSpec);
 }
 
 function createEndpointHtml(method, path, summary, description, tags) {

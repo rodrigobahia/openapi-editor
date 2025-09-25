@@ -19,10 +19,110 @@ if (!$openApiData) {
 // Processar salvamento
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
     $section = $_POST['section'];
-    // Aqui você pode implementar a lógica de salvamento específica para cada seção
-    // Por enquanto, apenas uma mensagem de sucesso
-    $message = 'Seção salva com sucesso!';
-    $messageType = 'success';
+    error_log("=== DEBUG SALVAMENTO ===");
+    error_log("Seção: " . $section);
+    error_log("POST data: " . print_r($_POST, true));
+    
+    $saved = false;
+    
+    switch ($section) {
+        case 'header':
+            // Processar dados do header (info, contact, license)
+            if (isset($_POST['api_title'])) $openApiData['info']['title'] = $_POST['api_title'];
+            if (isset($_POST['api_version'])) $openApiData['info']['version'] = $_POST['api_version'];
+            if (isset($_POST['api_description'])) $openApiData['info']['description'] = $_POST['api_description'];
+            if (isset($_POST['terms_of_service'])) $openApiData['info']['termsOfService'] = $_POST['terms_of_service'];
+            if (isset($_POST['openapi_version'])) $openApiData['openapi'] = $_POST['openapi_version'];
+            
+            // Contact info
+            if (isset($_POST['contact_name']) || isset($_POST['contact_email']) || isset($_POST['contact_url'])) {
+                if (!isset($openApiData['info']['contact'])) $openApiData['info']['contact'] = [];
+                if (isset($_POST['contact_name']) && !empty($_POST['contact_name'])) $openApiData['info']['contact']['name'] = $_POST['contact_name'];
+                if (isset($_POST['contact_email']) && !empty($_POST['contact_email'])) $openApiData['info']['contact']['email'] = $_POST['contact_email'];
+                if (isset($_POST['contact_url']) && !empty($_POST['contact_url'])) $openApiData['info']['contact']['url'] = $_POST['contact_url'];
+            }
+            
+            // License info
+            if (isset($_POST['license_name']) || isset($_POST['license_url'])) {
+                if (!isset($openApiData['info']['license'])) $openApiData['info']['license'] = [];
+                if (isset($_POST['license_name']) && !empty($_POST['license_name'])) $openApiData['info']['license']['name'] = $_POST['license_name'];
+                if (isset($_POST['license_url']) && !empty($_POST['license_url'])) $openApiData['info']['license']['url'] = $_POST['license_url'];
+            }
+            $saved = true;
+            break;
+            
+        case 'tags':
+            // Processar dados das tags
+            if (isset($_POST['tags_data'])) {
+                $tagsData = json_decode($_POST['tags_data'], true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $openApiData['tags'] = $tagsData;
+                    $saved = true;
+                }
+            }
+            break;
+            
+        case 'main':
+            // Processar dados dos endpoints
+            if (isset($_POST['paths'])) {
+                error_log("Campo paths recebido: " . $_POST['paths']);
+                $decodedPaths = json_decode($_POST['paths'], true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $openApiData['paths'] = $decodedPaths;
+                    $saved = true;
+                } else {
+                    error_log("Erro ao decodificar JSON paths: " . json_last_error_msg());
+                }
+            }
+            break;
+            
+        case 'servers':
+            // Processar dados dos servidores
+            if (isset($_POST['servers_data'])) {
+                $serversData = json_decode($_POST['servers_data'], true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $openApiData['servers'] = $serversData;
+                    $saved = true;
+                }
+            }
+            break;
+            
+        case 'security':
+            // Processar dados de segurança
+            if (isset($_POST['security_schemes'])) {
+                $securityData = json_decode($_POST['security_schemes'], true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    if (!isset($openApiData['components'])) $openApiData['components'] = [];
+                    $openApiData['components']['securitySchemes'] = $securityData;
+                    $saved = true;
+                }
+            }
+            break;
+            
+        default:
+            error_log("Seção desconhecida: " . $section);
+            break;
+    }
+    
+    if ($saved) {
+        // Salva no arquivo JSON
+        $result = file_put_contents(__DIR__ . '/files/' . $filename, json_encode($openApiData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        error_log("Resultado da gravação: " . ($result ? 'sucesso' : 'falha'));
+        
+        if ($result) {
+            $message = ucfirst($section) . ' salvo com sucesso!';
+            $messageType = 'success';
+            // Recarregar dados atualizados
+            $openApiData = loadOpenAPIFile($filename);
+        } else {
+            $message = 'Erro ao salvar arquivo.';
+            $messageType = 'danger';
+        }
+    } else {
+        error_log("Nenhum dado válido encontrado para salvar na seção: " . $section);
+        $message = 'Nenhum dado para salvar ou dados inválidos.';
+        $messageType = 'warning';
+    }
 }
 
 $currentSection = $_GET['section'] ?? 'header';

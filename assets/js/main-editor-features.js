@@ -1,9 +1,181 @@
+// Função global para serializar dados de qualquer seção antes do submit
+function serializeDataBeforeSubmit(form) {
+    const section = form.querySelector('input[name="section"]')?.value;
+    console.log('=== Serializando dados da seção:', section, '===');
+    
+    try {
+        switch (section) {
+            case 'header':
+                return serializeHeaderData(form);
+            case 'tags':
+                return serializeTagsData(form);
+            case 'main':
+                return serializePathsData(form);
+            case 'servers':
+                return serializeServersData(form);
+            case 'security':
+                return serializeSecurityData(form);
+            default:
+                console.log('Seção não reconhecida, permitindo submit padrão');
+                return true;
+        }
+    } catch (e) {
+        console.error('Erro na serialização:', e);
+        alert('Erro ao preparar dados para salvamento: ' + e.message);
+        return false;
+    }
+}
+
+// Função específica para serializar endpoints (antiga função)
+function serializePathsBeforeSubmit() {
+    try {
+        console.log('=== Iniciando serialização dos endpoints ===');
+        console.log('window.mainEditor:', window.mainEditor);
+        console.log('window.openApiSpec:', window.openApiSpec);
+        
+        let paths;
+        if (window.mainEditor && typeof window.mainEditor.getCurrentPaths === 'function') {
+            paths = window.mainEditor.getCurrentPaths();
+            console.log('Paths do mainEditor:', paths);
+        } else if (window.openApiSpec && window.openApiSpec.paths) {
+            paths = window.openApiSpec.paths;
+            console.log('Paths do openApiSpec global:', paths);
+        } else {
+            console.error('Não foi possível encontrar os endpoints para serializar.');
+            console.log('Tentando buscar paths de outras fontes...');
+            // Tentar buscar do DOM como fallback
+            paths = {};
+            const endpointElements = document.querySelectorAll('.endpoint-group');
+            console.log('Elementos de endpoint encontrados no DOM:', endpointElements.length);
+            endpointElements.forEach(elem => {
+                const path = elem.getAttribute('data-path');
+                const method = elem.getAttribute('data-method');
+                if (path && method) {
+                    if (!paths[path]) paths[path] = {};
+                    paths[path][method] = {
+                        summary: elem.querySelector('.text-muted.small').textContent || 'Endpoint criado',
+                        responses: { "200": { "description": "Successful response" } }
+                    };
+                }
+            });
+            console.log('Paths extraídos do DOM:', paths);
+        }
+        
+        const pathsField = document.getElementById('paths-json');
+        if (!pathsField) {
+            console.error('Campo oculto paths-json não encontrado no formulário.');
+            alert('Erro interno: campo de dados não encontrado.');
+            return false;
+        }
+        
+        const pathsJson = JSON.stringify(paths);
+        pathsField.value = pathsJson;
+        console.log('JSON serializado:', pathsJson);
+        console.log('Campo paths-json preenchido com:', pathsField.value);
+        console.log('=== Serialização concluída com sucesso ===');
+        return true;
+    } catch (e) {
+        console.error('Erro ao serializar endpoints:', e);
+        alert('Erro ao salvar endpoints: ' + e.message);
+        return false;
+    }
+}
+
+// Funções de serialização por seção
+function serializeHeaderData(form) {
+    console.log('Serializando dados do header');
+    // Os dados do header já são enviados pelos campos do formulário
+    // Não precisa de serialização especial
+    return true;
+}
+
+function serializeTagsData(form) {
+    console.log('Serializando dados das tags');
+    // Coletar tags dos campos do formulário
+    const tags = [];
+    document.querySelectorAll('.tag-item').forEach(item => {
+        const nameInput = item.querySelector('input[name*="[name]"]');
+        const descInput = item.querySelector('input[name*="[description]"]');
+        const urlInput = item.querySelector('input[name*="[url]"]');
+        const docDescInput = item.querySelector('input[name*="[externalDocs][description]"]');
+        
+        const name = nameInput?.value?.trim();
+        if (name) {
+            const tag = { name };
+            
+            const description = descInput?.value?.trim();
+            if (description) {
+                tag.description = description;
+            }
+            
+            const url = urlInput?.value?.trim();
+            const docDesc = docDescInput?.value?.trim();
+            if (url || docDesc) {
+                tag.externalDocs = {};
+                if (url) tag.externalDocs.url = url;
+                if (docDesc) tag.externalDocs.description = docDesc;
+            }
+            
+            tags.push(tag);
+        }
+    });
+    
+    let tagsField = form.querySelector('input[name="tags_data"]');
+    if (!tagsField) {
+        tagsField = document.createElement('input');
+        tagsField.type = 'hidden';
+        tagsField.name = 'tags_data';
+        form.appendChild(tagsField);
+    }
+    tagsField.value = JSON.stringify(tags);
+    console.log('Tags serializadas:', tags);
+    return true;
+}
+
+function serializePathsData(form) {
+    console.log('Serializando dados dos paths');
+    return serializePathsBeforeSubmit();
+}
+
+function serializeServersData(form) {
+    console.log('Serializando dados dos servers');
+    // Coletar servidores da interface e serializar
+    const servers = [];
+    document.querySelectorAll('.server-item').forEach(item => {
+        const url = item.querySelector('[data-field="url"]')?.textContent || item.querySelector('[data-field="url"]')?.value;
+        const description = item.querySelector('[data-field="description"]')?.textContent || item.querySelector('[data-field="description"]')?.value;
+        if (url) {
+            servers.push({ url, description: description || '' });
+        }
+    });
+    
+    let serversField = form.querySelector('input[name="servers_data"]');
+    if (!serversField) {
+        serversField = document.createElement('input');
+        serversField.type = 'hidden';
+        serversField.name = 'servers_data';
+        form.appendChild(serversField);
+    }
+    serversField.value = JSON.stringify(servers);
+    console.log('Servers serializados:', servers);
+    return true;
+}
+
+function serializeSecurityData(form) {
+    console.log('Serializando dados de segurança');
+    // Implementar quando necessário
+    return true;
+}
 /**
  * Main Editor Implementation - Advanced Features
  * OpenAPI Editor - Complete Main Tab Functionality
  */
 
 class MainEditorFeatures {
+    // ...existing code...
+    getCurrentPaths() {
+        return this.currentSpec.paths || {};
+    }
     constructor() {
         this.currentSpec = {};
         this.selectedPath = null;

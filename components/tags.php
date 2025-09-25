@@ -17,7 +17,7 @@ $tags = $openApiData['tags'] ?? [];
                 </button>
             </div>
             <div class="card-body">
-                <form method="POST" id="tags-form">
+                <form method="POST" id="tags-form" onsubmit="return serializeDataBeforeSubmit(this);">
                     <input type="hidden" name="save_section" value="1">
                     <input type="hidden" name="section" value="tags">
                     
