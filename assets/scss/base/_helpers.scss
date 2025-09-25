@@ -1,0 +1,27 @@
+// =================================================================
+// Helper Classes
+// =================================================================
+
+// Text utilities
+.text-truncate {
+  @include text-truncate;
+}
+
+// Display utilities
+.d-flex-center {
+  @include flex-center;
+}
+
+.d-flex-between {
+  @include flex-between;
+}
+
+// Loading spinner
+.spinner {
+  @include spinner;
+}
+
+// Fade in animation
+.fade-in {
+  @include fade-in;
+}

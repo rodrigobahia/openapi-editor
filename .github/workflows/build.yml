@@ -1,0 +1,146 @@
+name: 🚀 Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: 📦 Build Assets
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+        
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v3
+      
+    - name: 🟢 Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: 📋 Install dependencies
+      run: npm ci
+      
+    - name: 🔨 Build assets
+      run: npm run build
+      
+    - name: ✅ Check build output
+      run: |
+        ls -la assets/dist/
+        test -f assets/dist/css/app.min.css
+        test -f assets/dist/js/app.min.js
+        
+    - name: 📤 Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-assets-node-${{ matrix.node-version }}
+        path: assets/dist/
+
+  php-syntax:
+    name: 🐘 PHP Syntax Check
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        php-version: [7.4, 8.0, 8.1, 8.2]
+        
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v3
+      
+    - name: 🐘 Setup PHP ${{ matrix.php-version }}
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        
+    - name: ✅ Check PHP syntax
+      run: |
+        find . -name "*.php" -not -path "./vendor/*" -not -path "./node_modules/*" | xargs -I {} php -l {}
+        
+    - name: 🔍 Check configuration files
+      run: |
+        php -l config.php
+        php -l index.php
+        php -c config.php -r "echo 'Config OK';"
+
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v3
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        
+    - name: 📋 Install dependencies
+      run: npm ci
+      
+    - name: 🔒 Run security audit
+      run: npm audit --audit-level=moderate
+      
+    - name: 📝 Check for sensitive files
+      run: |
+        # Verificar se não há arquivos sensíveis commitados
+        ! find . -name "config.local.php" -o -name ".env" -o -name "*.log" | grep -v node_modules | head -1
+        
+  validate-json:
+    name: 📋 Validate JSON Files
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v3
+      
+    - name: ✅ Validate JSON syntax
+      run: |
+        find . -name "*.json" -not -path "./node_modules/*" | xargs -I {} sh -c 'echo "Validating {}" && cat {} | python -m json.tool > /dev/null'
+        
+    - name: 🔍 Validate OpenAPI spec
+      run: |
+        if [ -f "files/swagger.json" ]; then
+          echo "Validating OpenAPI specification..."
+          cat files/swagger.json | python -m json.tool > /dev/null
+          echo "✅ OpenAPI JSON is valid"
+        fi
+
+  lint:
+    name: 📝 Lint Code
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v3
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        
+    - name: 📋 Install dependencies
+      run: npm ci
+      
+    - name: 🎨 Check SCSS syntax
+      run: |
+        npx sass --no-source-map assets/scss/main.scss assets/temp.css
+        rm -f assets/temp.css
+        
+    - name: 🔍 Check for TODO/FIXME
+      run: |
+        echo "🔍 Checking for TODO/FIXME comments..."
+        if grep -r "TODO\|FIXME" --exclude-dir=node_modules --exclude-dir=.git .; then
+          echo "ℹ️  Found TODO/FIXME comments (not blocking)"
+        else
+          echo "✅ No TODO/FIXME found"
+        fi
+      continue-on-error: true

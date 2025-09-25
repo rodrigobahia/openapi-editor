@@ -1,0 +1,172 @@
+// Cards simplificados para home page
+// Sem mixins avançados - apenas CSS puro
+
+.card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px -1px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+      0 10px 25px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.action-card {
+  background: linear-gradient(145deg, 
+    var(--bg-primary, #ffffff), 
+    var(--surface-primary, #f8fafc)
+  );
+  border: 1px solid var(--border-subtle, rgba(226, 232, 240, 0.6));
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+      rgba(99, 102, 241, 0.1), 
+      rgba(168, 85, 247, 0.1)
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--primary-300, #a5b4fc);
+    box-shadow: 
+      0 20px 40px -12px rgba(99, 102, 241, 0.25),
+      0 8px 16px -8px rgba(0, 0, 0, 0.1);
+      
+    &::before {
+      opacity: 1;
+    }
+    
+    .action-icon {
+      transform: scale(1.1) rotate(5deg);
+      color: var(--primary-500, #6366f1);
+    }
+    
+    .action-title {
+      color: var(--primary-600, #4f46e5);
+    }
+  }
+  
+  &:active {
+    transform: translateY(-4px) scale(1.01);
+  }
+}
+
+.action-icon {
+  font-size: 3rem;
+  color: var(--primary-400, #818cf8);
+  margin-bottom: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.action-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.file-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: var(--primary-300, #a5b4fc);
+    box-shadow: 
+      0 4px 12px rgba(99, 102, 241, 0.15),
+      0 2px 4px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+}
+
+.file-icon {
+  font-size: 2rem;
+  color: var(--primary-500, #6366f1);
+  margin-bottom: 0.5rem;
+}
+
+.file-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.files-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+}
+
+.files-empty-icon {
+  font-size: 4rem;
+  color: var(--text-muted, #94a3b8);
+  margin-bottom: 1rem;
+}
+
+.files-empty-text {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.files-empty-subtext {
+  font-size: 0.875rem;
+  color: var(--text-muted, #64748b);
+}
+
+// Dark theme support
+[data-bs-theme="dark"] {
+  .card, .action-card, .file-card {
+    background: var(--bg-primary, #1e293b);
+    border-color: var(--border-color, #334155);
+  }
+  
+  .action-card:hover {
+    border-color: var(--primary-400, #818cf8);
+  }
+  
+  .file-card:hover {
+    border-color: var(--primary-400, #818cf8);
+  }
+}

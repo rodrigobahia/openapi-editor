@@ -1,0 +1,28 @@
+# ====================================
+# OpenAPI Editor - Configuração Ultra Básica
+# Para servidores com restrições
+# ====================================
+
+# Desabilitar listagem de diretórios
+Options -Indexes
+
+# Bloquear arquivos específicos (sintaxe compatível)
+<Files "*.env">
+    Deny from all
+</Files>
+
+<Files "*.log">
+    Deny from all
+</Files>
+
+<Files "package.json">
+    Deny from all
+</Files>
+
+<Files "gulpfile.js">
+    Deny from all
+</Files>
+
+# ====================================
+# Configuração mínima para máxima compatibilidade
+# ====================================

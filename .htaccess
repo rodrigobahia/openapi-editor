@@ -1,0 +1,90 @@
+# ====================================
+# OpenAPI Editor - Configuração Simples
+# ====================================
+
+# Desabilitar listagem de diretórios
+Options -Indexes
+
+# Proteção básica de arquivos sensíveis
+# ====================================
+
+# Bloquear arquivos de configuração
+<FilesMatch "\.(env|ini|conf|config)$">
+    Require all denied
+</FilesMatch>
+
+# Bloquear arquivos de desenvolvimento  
+<FilesMatch "\.(log|tmp|bak|backup)$">
+    Require all denied
+</FilesMatch>
+
+# Bloquear arquivos Node.js
+<FilesMatch "^(package\.json|gulpfile\.js|node_modules)">
+    Require all denied
+</FilesMatch>
+
+# Headers básicos de segurança (apenas se mod_headers estiver disponível)
+# ====================================
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Cache básico para assets (apenas se mod_expires estiver disponível)
+# ====================================
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # CSS e JavaScript - 1 ano
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    
+    # Imagens - 6 meses  
+    ExpiresByType image/png "access plus 6 months"
+    ExpiresByType image/jpg "access plus 6 months"
+    ExpiresByType image/jpeg "access plus 6 months"
+    ExpiresByType image/gif "access plus 6 months"
+    
+    # HTML/PHP - sem cache
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType application/x-httpd-php "access plus 0 seconds"
+</IfModule>
+
+# Compressão básica (apenas se mod_deflate estiver disponível)
+# ====================================
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# Rewrite básico (apenas se mod_rewrite estiver disponível)
+# ====================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Bloquear acesso direto a diretórios sensíveis
+    RewriteRule ^logs/ - [F,L]
+    RewriteRule ^node_modules/ - [F,L]
+</IfModule>
+
+# Configurações PHP básicas
+# ====================================
+
+# Apenas se AllowOverride Options estiver habilitado
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 30
+</IfModule>
+
+# ====================================
+# Configuração minimalista e compatível
+# OpenAPI Editor v2.0
+# ====================================

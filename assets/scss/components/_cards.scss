@@ -1,0 +1,26 @@
+// =================================================================
+// Cards Component
+// =================================================================
+
+.card {
+  @include hover-lift();
+  @include theme-property(border, 1px solid $light-border-color, 1px solid $dark-border-color);
+  @include theme-property(background-color, $light-bg-primary, $dark-bg-primary);
+  
+  transition: $transition-base;
+  
+  &-header {
+    @include theme-property(background-color, $light-bg-secondary, $dark-bg-secondary);
+    @include theme-property(border-bottom, 1px solid $light-border-color, 1px solid $dark-border-color);
+  }
+  
+  &-title {
+    @include theme-property(color, $light-text-primary, $dark-text-primary);
+    margin-bottom: 0;
+    font-weight: $font-weight-bold;
+  }
+  
+  &-text {
+    @include theme-property(color, $light-text-secondary, $dark-text-secondary);
+  }
+}

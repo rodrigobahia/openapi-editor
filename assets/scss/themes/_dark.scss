@@ -1,0 +1,38 @@
+// =================================================================
+// Dark Theme
+// =================================================================
+
+[data-bs-theme="dark"] {
+  --bg-primary: #{$dark-bg-primary};
+  --bg-secondary: #{$dark-bg-secondary};
+  --text-primary: #{$dark-text-primary};
+  --text-secondary: #{$dark-text-secondary};
+  --border-color: #{$dark-border-color};
+  
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+  
+  .bg-light {
+    background-color: var(--bg-secondary) !important;
+  }
+  
+  .text-dark {
+    color: var(--text-primary) !important;
+  }
+  
+  .text-muted {
+    color: var(--text-secondary) !important;
+  }
+  
+  code {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+  
+  pre {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+}

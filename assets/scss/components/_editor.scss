@@ -1,0 +1,51 @@
+// =================================================================
+// Editor Component
+// =================================================================
+
+.editor-nav {
+  @include theme-property(background-color, $light-bg-secondary, $dark-bg-secondary);
+  @include theme-property(border-bottom, 1px solid $light-border-color, 1px solid $dark-border-color);
+  height: $editor-nav-height;
+  
+  .nav-link {
+    @include theme-property(color, $light-text-primary, $dark-text-primary);
+    transition: $transition-base;
+    
+    &:hover {
+      @include theme-property(background-color, rgba($primary-color, 0.1), rgba($primary-color, 0.2));
+    }
+    
+    &.active {
+      background-color: $primary-color !important;
+      color: white !important;
+    }
+  }
+}
+
+.editor-section {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.server-item,
+.tag-item,
+.schema-item,
+.endpoint-group {
+  @include theme-property(border, 1px solid $light-border-color, 1px solid $dark-border-color);
+  @include theme-property(background-color, $light-bg-primary, $dark-bg-primary);
+  @include border-radius();
+  
+  transition: $transition-base;
+  
+  &:hover {
+    @include theme-property(box-shadow, $box-shadow-sm, 0 0.125rem 0.25rem rgba(255, 255, 255, 0.075));
+  }
+}
+
+.method-item {
+  &.border-primary { border-left-color: $primary-color !important; }
+  &.border-success { border-left-color: $success-color !important; }
+  &.border-warning { border-left-color: $warning-color !important; }
+  &.border-info { border-left-color: $info-color !important; }
+  &.border-danger { border-left-color: $danger-color !important; }
+  &.border-secondary { border-left-color: $secondary-color !important; }
+}
