@@ -90,14 +90,28 @@ function serializeHeaderData(form) {
 }
 
 function serializeTagsData(form) {
-    console.log('Serializando dados das tags');
-    // Coletar tags dos campos do formulário
+    console.log('=== Serializando dados das tags ===');
+    
+    // Debug: verificar elementos encontrados
+    const tagItems = document.querySelectorAll('.tag-item');
+    console.log('Tag items encontrados:', tagItems.length);
+    
     const tags = [];
-    document.querySelectorAll('.tag-item').forEach(item => {
-        const nameInput = item.querySelector('input[name*="[name]"]');
+    tagItems.forEach((item, index) => {
+        console.log(`Processando tag item ${index + 1}:`);
+        
+        // Buscar inputs de forma mais específica
+        const nameInput = item.querySelector('input[name*="[name]"]') || item.querySelector('input[type="text"]');
         const descInput = item.querySelector('input[name*="[description]"]');
-        const urlInput = item.querySelector('input[name*="[url]"]');
-        const docDescInput = item.querySelector('input[name*="[externalDocs][description]"]');
+        const urlInput = item.querySelector('input[name*="[externalDocs][url]"]') || item.querySelector('input[type="url"]');
+        const docDescInput = item.querySelector('input[name*="[externalDocs][description]"]:last-of-type');
+        
+        console.log('Campos encontrados:', {
+            nameInput: nameInput?.name,
+            nameValue: nameInput?.value,
+            descInput: descInput?.name,
+            descValue: descInput?.value
+        });
         
         const name = nameInput?.value?.trim();
         if (name) {
@@ -117,6 +131,9 @@ function serializeTagsData(form) {
             }
             
             tags.push(tag);
+            console.log(`Tag ${index + 1} adicionada:`, tag);
+        } else {
+            console.log(`Tag ${index + 1} ignorada - nome vazio`);
         }
     });
     
@@ -126,9 +143,16 @@ function serializeTagsData(form) {
         tagsField.type = 'hidden';
         tagsField.name = 'tags_data';
         form.appendChild(tagsField);
+        console.log('Campo oculto tags_data criado');
     }
-    tagsField.value = JSON.stringify(tags);
-    console.log('Tags serializadas:', tags);
+    
+    const tagsJson = JSON.stringify(tags);
+    tagsField.value = tagsJson;
+    
+    console.log('JSON final das tags:', tagsJson);
+    console.log('Campo tags_data preenchido:', tagsField.value);
+    console.log('=== Serialização de tags concluída ===');
+    
     return true;
 }
 

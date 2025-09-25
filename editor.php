@@ -22,9 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
     error_log("=== DEBUG SALVAMENTO ===");
     error_log("Seção: " . $section);
     error_log("POST data: " . print_r($_POST, true));
-    
+
     $saved = false;
-    
+
     switch ($section) {
         case 'header':
             // Processar dados do header (info, contact, license)
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
             if (isset($_POST['api_description'])) $openApiData['info']['description'] = $_POST['api_description'];
             if (isset($_POST['terms_of_service'])) $openApiData['info']['termsOfService'] = $_POST['terms_of_service'];
             if (isset($_POST['openapi_version'])) $openApiData['openapi'] = $_POST['openapi_version'];
-            
+
             // Contact info
             if (isset($_POST['contact_name']) || isset($_POST['contact_email']) || isset($_POST['contact_url'])) {
                 if (!isset($openApiData['info']['contact'])) $openApiData['info']['contact'] = [];
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
                 if (isset($_POST['contact_email']) && !empty($_POST['contact_email'])) $openApiData['info']['contact']['email'] = $_POST['contact_email'];
                 if (isset($_POST['contact_url']) && !empty($_POST['contact_url'])) $openApiData['info']['contact']['url'] = $_POST['contact_url'];
             }
-            
+
             // License info
             if (isset($_POST['license_name']) || isset($_POST['license_url'])) {
                 if (!isset($openApiData['info']['license'])) $openApiData['info']['license'] = [];
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
             }
             $saved = true;
             break;
-            
+
         case 'tags':
             // Processar dados das tags
             if (isset($_POST['tags_data'])) {
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
                 }
             }
             break;
-            
+
         case 'main':
             // Processar dados dos endpoints
             if (isset($_POST['paths'])) {
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
                 }
             }
             break;
-            
+
         case 'servers':
             // Processar dados dos servidores
             if (isset($_POST['servers_data'])) {
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
                 }
             }
             break;
-            
+
         case 'security':
             // Processar dados de segurança
             if (isset($_POST['security_schemes'])) {
@@ -98,17 +98,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_section'])) {
                 }
             }
             break;
-            
+
         default:
             error_log("Seção desconhecida: " . $section);
             break;
     }
-    
+
     if ($saved) {
         // Salva no arquivo JSON
         $result = file_put_contents(__DIR__ . '/files/' . $filename, json_encode($openApiData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         error_log("Resultado da gravação: " . ($result ? 'sucesso' : 'falha'));
-        
+
         if ($result) {
             $message = ucfirst($section) . ' salvo com sucesso!';
             $messageType = 'success';
@@ -129,15 +129,16 @@ $currentSection = $_GET['section'] ?? 'header';
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $_SESSION['language']; ?>" data-bs-theme="light" itemscope itemtype="http://schema.org/WebApplication">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
-    
-    <?php 
+
+    <?php
     $projectName = htmlspecialchars(pathinfo($filename, PATHINFO_FILENAME));
     $sectionName = ucfirst($currentSection);
     ?>
-    
+
     <!-- Primary Meta Tags -->
     <title>Editing <?php echo $projectName; ?> - <?php echo $sectionName; ?> | OpenAPI Editor</title>
     <meta name="title" content="Editing <?php echo $projectName; ?> - <?php echo $sectionName; ?> | OpenAPI Editor">
@@ -146,10 +147,10 @@ $currentSection = $_GET['section'] ?? 'header';
     <meta name="author" content="OpenAPI Editor Team">
     <meta name="robots" content="noindex, nofollow">
     <meta name="googlebot" content="noindex, nofollow">
-    
+
     <!-- Canonical URL -->
     <link rel="canonical" href="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>">
-    
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>">
@@ -160,14 +161,14 @@ $currentSection = $_GET['section'] ?? 'header';
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="OpenAPI Editor - Professional API Documentation Interface">
     <meta property="og:site_name" content="OpenAPI Editor">
-    
+
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>">
     <meta name="twitter:title" content="Editing <?php echo $projectName; ?> - OpenAPI Editor">
     <meta name="twitter:description" content="Professional API documentation editing interface with real-time validation and visual design tools.">
     <meta name="twitter:image" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']; ?>/assets/images/editor-twitter-card.jpg">
-    
+
     <!-- Application Meta -->
     <meta name="application-name" content="OpenAPI Editor">
     <meta name="theme-color" content="#4f46e5">
@@ -175,79 +176,79 @@ $currentSection = $_GET['section'] ?? 'header';
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="OpenAPI Editor">
-    
+
     <!-- Breadcrumb Structured Data -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [{
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']; ?>/"
-      },{
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Editor",
-        "item": "<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/editor.php'; ?>"
-      },{
-        "@type": "ListItem",
-        "position": 3,
-        "name": "<?php echo $projectName; ?>",
-        "item": "<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>"
-      }]
-    }
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']; ?>/"
+            }, {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Editor",
+                "item": "<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/editor.php'; ?>"
+            }, {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "<?php echo $projectName; ?>",
+                "item": "<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>"
+            }]
+        }
     </script>
-    
+
     <!-- WebApplication Structured Data -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "OpenAPI Editor - <?php echo $projectName; ?>",
-      "description": "Professional API documentation editing interface for <?php echo $projectName; ?> with real-time validation and comprehensive OpenAPI 3.0 support.",
-      "url": "<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Web Browser",
-      "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "softwareVersion": "1.0",
-      "creator": {
-        "@type": "Organization",
-        "name": "OpenAPI Editor Team"
-      },
-      "potentialAction": {
-        "@type": "UseAction",
-        "target": "<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>",
-        "actionStatus": "PotentialActionStatus",
-        "object": {
-          "@type": "DigitalDocument",
-          "name": "<?php echo $projectName; ?> OpenAPI Specification"
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "OpenAPI Editor - <?php echo $projectName; ?>",
+            "description": "Professional API documentation editing interface for <?php echo $projectName; ?> with real-time validation and comprehensive OpenAPI 3.0 support.",
+            "url": "<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "Web Browser",
+            "browserRequirements": "Requires JavaScript. Requires HTML5.",
+            "softwareVersion": "1.0",
+            "creator": {
+                "@type": "Organization",
+                "name": "OpenAPI Editor Team"
+            },
+            "potentialAction": {
+                "@type": "UseAction",
+                "target": "<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>",
+                "actionStatus": "PotentialActionStatus",
+                "object": {
+                    "@type": "DigitalDocument",
+                    "name": "<?php echo $projectName; ?> OpenAPI Specification"
+                }
+            }
         }
-      }
-    }
     </script>
-    
+
     <!-- Language Alternatives -->
     <link rel="alternate" hreflang="en" href="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>&lang=en">
     <link rel="alternate" hreflang="pt" href="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>&lang=pt">
     <link rel="alternate" hreflang="es" href="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>&lang=es">
-    
+
     <!-- Performance Optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="assets/dist/css/main.min.css" as="style">
     <link rel="preload" href="assets/dist/js/app.min.js" as="script">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" as="style">
-    
+
     <!-- CSS Resources -->
     <link href="assets/dist/css/vendors/bootstrap.min.css" rel="stylesheet">
     <link href="assets/dist/css/vendors/all.min.css" rel="stylesheet">
     <link href="assets/dist/css/main.min.css" rel="stylesheet">
-    
+
     <!-- Google Fonts for enhanced typography -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+
     <!-- Editor-specific styles -->
     <style>
         /* Editor Background */
@@ -353,14 +354,16 @@ $currentSection = $_GET['section'] ?? 'header';
         }
 
         /* Enhanced Form Inputs */
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             background-color: var(--input-bg, #f8f9fa);
             border: 2px solid var(--input-border, #e9ecef);
             border-radius: 8px;
             transition: all 0.3s ease;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             background-color: var(--input-focus-bg, #ffffff);
             border-color: var(--bs-primary);
             box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
@@ -411,6 +414,7 @@ $currentSection = $_GET['section'] ?? 'header';
         }
     </style>
 </head>
+
 <body>
     <!-- Modern Navigation (Same as Index) -->
     <nav class="navbar navbar-modern navbar-expand-lg">
@@ -487,38 +491,38 @@ $currentSection = $_GET['section'] ?? 'header';
                     <div class="d-flex justify-content-between align-items-center py-3 flex-wrap gap-3">
                         <!-- Section Navigation -->
                         <nav class="nav nav-pills flex-wrap">
-                            <a class="nav-link <?php echo $currentSection === 'header' ? 'active' : ''; ?>" 
-                               href="?file=<?php echo urlencode($filename); ?>&section=header">
+                            <a class="nav-link <?php echo $currentSection === 'header' ? 'active' : ''; ?>"
+                                href="?file=<?php echo urlencode($filename); ?>&section=header">
                                 <i class="fas fa-info-circle me-1 d-md-inline d-none"></i>
                                 <span class="d-md-inline d-none"><?php echo t('header'); ?></span>
                                 <i class="fas fa-info-circle d-md-none"></i>
                             </a>
-                            <a class="nav-link <?php echo $currentSection === 'servers' ? 'active' : ''; ?>" 
-                               href="?file=<?php echo urlencode($filename); ?>&section=servers">
+                            <a class="nav-link <?php echo $currentSection === 'servers' ? 'active' : ''; ?>"
+                                href="?file=<?php echo urlencode($filename); ?>&section=servers">
                                 <i class="fas fa-server me-1 d-md-inline d-none"></i>
                                 <span class="d-md-inline d-none"><?php echo t('servers'); ?></span>
                                 <i class="fas fa-server d-md-none"></i>
                             </a>
-                            <a class="nav-link <?php echo $currentSection === 'security' ? 'active' : ''; ?>" 
-                               href="?file=<?php echo urlencode($filename); ?>&section=security">
+                            <a class="nav-link <?php echo $currentSection === 'security' ? 'active' : ''; ?>"
+                                href="?file=<?php echo urlencode($filename); ?>&section=security">
                                 <i class="fas fa-shield-alt me-1 d-md-inline d-none"></i>
                                 <span class="d-md-inline d-none"><?php echo t('security'); ?></span>
                                 <i class="fas fa-shield-alt d-md-none"></i>
                             </a>
-                            <a class="nav-link <?php echo $currentSection === 'tags' ? 'active' : ''; ?>" 
-                               href="?file=<?php echo urlencode($filename); ?>&section=tags">
+                            <a class="nav-link <?php echo $currentSection === 'tags' ? 'active' : ''; ?>"
+                                href="?file=<?php echo urlencode($filename); ?>&section=tags">
                                 <i class="fas fa-tags me-1 d-md-inline d-none"></i>
                                 <span class="d-md-inline d-none"><?php echo t('tags'); ?></span>
                                 <i class="fas fa-tags d-md-none"></i>
                             </a>
-                            <a class="nav-link <?php echo $currentSection === 'main' ? 'active' : ''; ?>" 
-                               href="?file=<?php echo urlencode($filename); ?>&section=main">
+                            <a class="nav-link <?php echo $currentSection === 'main' ? 'active' : ''; ?>"
+                                href="?file=<?php echo urlencode($filename); ?>&section=main">
                                 <i class="fas fa-code me-1 d-md-inline d-none"></i>
                                 <span class="d-md-inline d-none"><?php echo t('main'); ?></span>
                                 <i class="fas fa-code d-md-none"></i>
                             </a>
-                            <a class="nav-link <?php echo $currentSection === 'schemas' ? 'active' : ''; ?>" 
-                               href="?file=<?php echo urlencode($filename); ?>&section=schemas">
+                            <a class="nav-link <?php echo $currentSection === 'schemas' ? 'active' : ''; ?>"
+                                href="?file=<?php echo urlencode($filename); ?>&section=schemas">
                                 <i class="fas fa-project-diagram me-1 d-md-inline d-none"></i>
                                 <span class="d-md-inline d-none"><?php echo t('schemas'); ?></span>
                                 <i class="fas fa-project-diagram d-md-none"></i>
@@ -546,7 +550,9 @@ $currentSection = $_GET['section'] ?? 'header';
                                             Exportar como YAML
                                         </a>
                                     </li>
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <li>
                                         <a class="dropdown-item text-muted" href="preview.php?file=<?php echo urlencode($filename); ?>" target="_blank">
                                             <i class="fas fa-eye me-2"></i>
@@ -586,7 +592,7 @@ $currentSection = $_GET['section'] ?? 'header';
                     </li>
                 </ol>
             </nav>
-            
+
             <!-- Status Messages -->
             <?php if (isset($message)): ?>
                 <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
@@ -604,10 +610,10 @@ $currentSection = $_GET['section'] ?? 'header';
                             <div class="row align-items-center">
                                 <div class="col-md-8">
                                     <h1 itemprop="headline">
-                                        <?php 
+                                        <?php
                                         $sectionTitles = [
                                             'header' => 'API Information',
-                                            'servers' => 'Server Configuration', 
+                                            'servers' => 'Server Configuration',
                                             'security' => 'Security Settings',
                                             'tags' => 'Tag Management',
                                             'main' => 'Paths & Operations',
@@ -630,71 +636,71 @@ $currentSection = $_GET['section'] ?? 'header';
                                         ?>
                                     </p>
                                 </div>
-                                <div class="col-md-4 text-end">
+                                <!-- <div class="col-md-4 text-end">
                                     <button class="btn btn-outline-secondary btn-sm" id="save-section" title="Save your changes to the OpenAPI specification" style="font-size: 0.75rem; opacity: 0.7;">
                                         <i class="fas fa-save me-1"></i>
                                         <span class="d-none d-lg-inline">Save</span>
                                         <span class="d-lg-none">💾</span>
                                     </button>
-                                </div>
+                                </div> -->
                             </div>
-                        </div>
+                </div>
 
-                        <!-- Content Body -->
-                        <div class="card-body p-4">
-                            <?php
-                            $componentFile = "components/{$currentSection}.php";
-                            if (file_exists($componentFile)) {
-                                include $componentFile;
-                            } else {
-                                ?>
-                                <div class="text-center py-5">
-                                    <div class="mb-4">
-                                        <i class="fas fa-tools fa-4x text-primary opacity-50"></i>
-                                    </div>
-                                    <h4 class="text-primary">Section Under Development</h4>
-                                    <p class="text-muted mb-4">The <strong><?php echo htmlspecialchars($currentSection); ?></strong> section is currently being enhanced with advanced features.</p>
-                                    
-                                    <!-- Sample Form for Demo -->
-                                    <div class="row justify-content-center">
-                                        <div class="col-md-6">
-                                            <div class="card bg-light">
-                                                <div class="card-body">
-                                                    <h6 class="card-title">Example Configuration</h6>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Example Field</label>
-                                                        <input type="text" class="form-control" placeholder="Enter some text...">
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Example Select</label>
-                                                        <select class="form-select">
-                                                            <option>Choose an option...</option>
-                                                            <option>Option 1</option>
-                                                            <option>Option 2</option>
-                                                        </select>
-                                                    </div>
-                                                    <button class="btn btn-primary btn-sm">
-                                                        <i class="fas fa-bell me-2"></i>Notify When Ready
-                                                    </button>
-                                                </div>
+                <!-- Content Body -->
+                <div class="card-body p-4">
+                    <?php
+                    $componentFile = "components/{$currentSection}.php";
+                    if (file_exists($componentFile)) {
+                        include $componentFile;
+                    } else {
+                    ?>
+                        <div class="text-center py-5">
+                            <div class="mb-4">
+                                <i class="fas fa-tools fa-4x text-primary opacity-50"></i>
+                            </div>
+                            <h4 class="text-primary">Section Under Development</h4>
+                            <p class="text-muted mb-4">The <strong><?php echo htmlspecialchars($currentSection); ?></strong> section is currently being enhanced with advanced features.</p>
+
+                            <!-- Sample Form for Demo -->
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Example Configuration</h6>
+                                            <div class="mb-3">
+                                                <label class="form-label">Example Field</label>
+                                                <input type="text" class="form-control" placeholder="Enter some text...">
                                             </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Example Select</label>
+                                                <select class="form-select">
+                                                    <option>Choose an option...</option>
+                                                    <option>Option 1</option>
+                                                    <option>Option 2</option>
+                                                </select>
+                                            </div>
+                                            <button class="btn btn-primary btn-sm">
+                                                <i class="fas fa-bell me-2"></i>Notify When Ready
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <?php
-                            }
-                            ?>
+                            </div>
                         </div>
-                    </article>
+                    <?php
+                    }
+                    ?>
                 </div>
+                </article>
             </div>
+        </div>
         </div>
     </main>
 
     <!-- Core Scripts -->
     <script src="assets/dist/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="assets/dist/js/home-page.min.js"></script>
-    
+
     <!-- Editor Configuration -->
     <script>
         // Basic configuration for editor page
@@ -716,45 +722,45 @@ $currentSection = $_GET['section'] ?? 'header';
                     const originalText = this.innerHTML;
                     this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
                     this.disabled = true;
-                    
+
                     // Create form data for the current section
                     const formData = new FormData();
                     formData.append('save_section', '1');
                     formData.append('section', window.currentSection);
-                    
+
                     // Simulate API call (replace with actual save logic)
                     fetch(window.location.href, {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.text())
-                    .then(data => {
-                        // Show success state
-                        this.innerHTML = '<i class="fas fa-check me-2"></i>Saved Successfully!';
-                        this.className = 'btn btn-success btn-lg';
-                        
-                        // Reset after delay
-                        setTimeout(() => {
-                            this.innerHTML = originalText;
-                            this.className = 'btn btn-light btn-lg';
-                            this.disabled = false;
-                        }, 2000);
-                    })
-                    .catch(error => {
-                        // Show error state
-                        this.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error Saving';
-                        this.className = 'btn btn-danger btn-lg';
-                        
-                        // Reset after delay
-                        setTimeout(() => {
-                            this.innerHTML = originalText;
-                            this.className = 'btn btn-light btn-lg';
-                            this.disabled = false;
-                        }, 2000);
-                        
-                        console.error('Save error:', error);
-                    });
-                    
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.text())
+                        .then(data => {
+                            // Show success state
+                            this.innerHTML = '<i class="fas fa-check me-2"></i>Saved Successfully!';
+                            this.className = 'btn btn-success btn-lg';
+
+                            // Reset after delay
+                            setTimeout(() => {
+                                this.innerHTML = originalText;
+                                this.className = 'btn btn-light btn-lg';
+                                this.disabled = false;
+                            }, 2000);
+                        })
+                        .catch(error => {
+                            // Show error state
+                            this.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error Saving';
+                            this.className = 'btn btn-danger btn-lg';
+
+                            // Reset after delay
+                            setTimeout(() => {
+                                this.innerHTML = originalText;
+                                this.className = 'btn btn-light btn-lg';
+                                this.disabled = false;
+                            }, 2000);
+
+                            console.error('Save error:', error);
+                        });
+
                     console.log('Saving section:', window.currentSection);
                 });
             }
@@ -764,11 +770,11 @@ $currentSection = $_GET['section'] ?? 'header';
         function exportFile(format) {
             const dropdown = document.getElementById('exportDropdown');
             const originalText = dropdown.innerHTML;
-            
+
             // Show loading state
             dropdown.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Exporting...';
             dropdown.disabled = true;
-            
+
             // Simulate export process
             setTimeout(() => {
                 // Create download link
@@ -778,7 +784,7 @@ $currentSection = $_GET['section'] ?? 'header';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                
+
                 // Show success and reset
                 dropdown.innerHTML = '<i class="fas fa-check me-2"></i>Downloaded!';
                 setTimeout(() => {
@@ -786,7 +792,7 @@ $currentSection = $_GET['section'] ?? 'header';
                     dropdown.disabled = false;
                 }, 1500);
             }, 800);
-            
+
             console.log(`Exporting ${window.currentFile} as ${format.toUpperCase()}`);
         }
 
@@ -799,4 +805,5 @@ $currentSection = $_GET['section'] ?? 'header';
         <?php endif; ?>
     </script>
 </body>
+
 </html>

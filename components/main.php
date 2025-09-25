@@ -1043,6 +1043,55 @@ function clearAllContainers() {
     document.getElementById('request-example').value = '';
 }
 
+function serializeDataBeforeSubmit(form) {
+    console.log('serializeDataBeforeSubmit chamada para main/paths');
+    
+    try {
+        const endpoints = document.querySelectorAll('.endpoint-item');
+        const pathsData = {};
+        
+        endpoints.forEach(endpoint => {
+            const path = endpoint.getAttribute('data-path');
+            const method = endpoint.getAttribute('data-method');
+            
+            if (path && method) {
+                if (!pathsData[path]) {
+                    pathsData[path] = {};
+                }
+                
+                const summaryEl = endpoint.querySelector('.endpoint-summary');
+                const descriptionEl = endpoint.querySelector('.endpoint-description');
+                const tagsEl = endpoint.querySelector('.endpoint-tags');
+                
+                pathsData[path][method] = {
+                    summary: summaryEl ? summaryEl.textContent : '',
+                    description: descriptionEl ? descriptionEl.textContent : '',
+                    tags: tagsEl ? tagsEl.textContent.split(',').map(t => t.trim()).filter(t => t) : []
+                };
+            }
+        });
+        
+        console.log('Dados dos paths serializados:', pathsData);
+        
+        // Adicionar campo hidden com dados serializados
+        let hiddenInput = form.querySelector('input[name="paths"]');
+        if (!hiddenInput) {
+            hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'paths';
+            form.appendChild(hiddenInput);
+        }
+        hiddenInput.value = JSON.stringify(pathsData);
+        
+        console.log('Campo hidden paths adicionado/atualizado');
+        return true;
+        
+    } catch (error) {
+        console.error('Erro ao serializar dados dos paths:', error);
+        return false;
+    }
+}
+
 function saveEndpoint() {
     const form = document.getElementById('endpoint-form');
     const method = document.getElementById('endpoint-method').value;

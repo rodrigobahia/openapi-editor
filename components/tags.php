@@ -163,4 +163,83 @@ function updateTagNumbers() {
         header.textContent = `Tag #${index + 1}`;
     });
 }
+
+// Função específica para serializar tags (incluída diretamente no componente)
+function serializeTagsData() {
+    console.log('=== Serializando dados das tags ===');
+    
+    const tagItems = document.querySelectorAll('.tag-item');
+    console.log('Tag items encontrados:', tagItems.length);
+    
+    const tags = [];
+    tagItems.forEach((item, index) => {
+        console.log(`Processando tag item ${index + 1}:`);
+        
+        const inputs = item.querySelectorAll('input[type="text"], input[type="url"]');
+        console.log('Inputs encontrados:', inputs.length);
+        
+        const nameInput = item.querySelector('input[name*="[name]"]');
+        const descInput = item.querySelector('input[name*="[description]"]');
+        const urlInput = item.querySelector('input[name*="[url]"]');
+        const docDescInput = item.querySelector('input[name*="[externalDocs][description]"]');
+        
+        console.log('Campos:', {
+            nameInput: nameInput?.name,
+            nameValue: nameInput?.value,
+            descInput: descInput?.name,
+            descValue: descInput?.value
+        });
+        
+        const name = nameInput?.value?.trim();
+        if (name) {
+            const tag = { name };
+            
+            const description = descInput?.value?.trim();
+            if (description) {
+                tag.description = description;
+            }
+            
+            const url = urlInput?.value?.trim();
+            const docDesc = docDescInput?.value?.trim();
+            if (url || docDesc) {
+                tag.externalDocs = {};
+                if (url) tag.externalDocs.url = url;
+                if (docDesc) tag.externalDocs.description = docDesc;
+            }
+            
+            tags.push(tag);
+            console.log(`Tag ${index + 1} adicionada:`, tag);
+        }
+    });
+    
+    const form = document.getElementById('tags-form');
+    let tagsField = form.querySelector('input[name="tags_data"]');
+    if (!tagsField) {
+        tagsField = document.createElement('input');
+        tagsField.type = 'hidden';
+        tagsField.name = 'tags_data';
+        form.appendChild(tagsField);
+        console.log('Campo oculto tags_data criado');
+    }
+    
+    const tagsJson = JSON.stringify(tags);
+    tagsField.value = tagsJson;
+    
+    console.log('JSON final das tags:', tagsJson);
+    console.log('Campo preenchido:', tagsField.value);
+    console.log('=== Serialização concluída ===');
+    
+    return true;
+}
+
+// Sobrescrever a função global se existir
+function serializeDataBeforeSubmit(form) {
+    const section = form.querySelector('input[name="section"]')?.value;
+    console.log('Serializando seção:', section);
+    
+    if (section === 'tags') {
+        return serializeTagsData();
+    }
+    return true;
+}
 </script>
