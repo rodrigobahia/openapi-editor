@@ -1,0 +1,82 @@
+// Editor - Estilos que estavam inline
+// ===================================
+
+// Gradiente para divs decorativas
+.gradient-bg-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+// Select com altura mínima para tags múltiplas
+.multi-select-tags {
+  min-height: 80px !important;
+}
+
+// Toast notifications positioning
+.toast-notification {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  z-index: 9999 !important;
+}
+
+// Container com display none para mostrar/esconder dinamicamente
+.hidden-container {
+  display: none !important;
+}
+
+// Container de formato bearer (security)
+.bearer-format-container {
+  display: none;
+  
+  &.show {
+    display: block !important;
+  }
+}
+
+// Opções específicas para diferentes tipos de schema
+.schema-type-options {
+  display: none;
+  
+  &.show {
+    display: block !important;
+  }
+}
+
+// Botão de remoção que pode ser escondido
+.removable-btn {
+  &.hidden {
+    display: none !important;
+  }
+}
+
+// Container Swagger que inicia escondido
+.swagger-container {
+  &.hidden-container {
+    display: none !important;
+    
+    &.show {
+      display: block !important;
+    }
+  }
+}
+
+// Utilitários específicos do editor
+.editor-utils {
+  // Para elementos que precisam ser mostrados dinamicamente
+  .show-on-action {
+    display: none;
+    
+    &.active {
+      display: block !important;
+    }
+  }
+  
+  // Para campos condicionais
+  .conditional-field {
+    display: none;
+    
+    &.visible {
+      display: block !important;
+    }
+  }
+}

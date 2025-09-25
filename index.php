@@ -504,7 +504,7 @@ $files = getOpenAPIFiles();
       <div class="modal-content border-0 shadow-lg">
         <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
           <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
-            <div class="bg-primary w-100 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+            <div class="bg-primary w-100 h-100 gradient-bg-purple"></div>
           </div>
           <div class="d-flex align-items-center position-relative z-index-2 w-100">
             <div class="flex-grow-1">

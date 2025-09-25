@@ -29,7 +29,7 @@ $servers = $openApiData['servers'] ?? [];
                             <div class="server-item border rounded p-3 mb-3">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h6 class="mb-0">Servidor #1</h6>
-                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeServer(this)" style="display: none;">
+                                    <button type="button" class="btn btn-outline-danger btn-sm removable-btn hidden" onclick="removeServer(this)">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -55,7 +55,7 @@ $servers = $openApiData['servers'] ?? [];
                                 <div class="server-item border rounded p-3 mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h6 class="mb-0">Servidor #<?php echo $index + 1; ?></h6>
-                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeServer(this)" <?php echo $index === 0 ? 'style="display: none;"' : ''; ?>>
+                                        <button type="button" class="btn btn-outline-danger btn-sm removable-btn <?php echo $index === 0 ? 'hidden' : ''; ?>" onclick="removeServer(this)">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -174,9 +174,9 @@ function updateRemoveButtons() {
     servers.forEach((server, index) => {
         const removeBtn = server.querySelector('.btn-outline-danger');
         if (index === 0 && servers.length === 1) {
-            removeBtn.style.display = 'none';
+            removeBtn.classList.add('hidden');
         } else {
-            removeBtn.style.display = 'inline-block';
+            removeBtn.classList.remove('hidden');
         }
     });
 }

@@ -395,7 +395,7 @@ $jsonData = json_encode($openApiData);
         </div>
 
         <!-- Swagger UI Container -->
-        <div class="swagger-container" style="display: none;" itemscope itemtype="http://schema.org/SoftwareApplication">
+        <div class="swagger-container hidden-container" itemscope itemtype="http://schema.org/SoftwareApplication">
             <meta itemprop="name" content="<?php echo $apiTitle; ?> API Documentation">
             <meta itemprop="applicationCategory" content="API Documentation">
             <meta itemprop="version" content="<?php echo $apiVersion; ?>">
@@ -450,7 +450,7 @@ $jsonData = json_encode($openApiData);
                 
                 setTimeout(() => {
                     document.getElementById('loading').style.display = 'none';
-                    document.querySelector('.swagger-container').style.display = 'block';
+                    document.querySelector('.swagger-container').classList.add('show');
                 }, 500);
             }, 1000);
             

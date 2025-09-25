@@ -235,7 +235,7 @@ function renderSchemaCard($schemaName, $schemaData) {
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
                 <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
-                    <div class="bg-primary w-100 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <div class="bg-primary w-100 h-100 gradient-bg-purple"></div>
                 </div>
                 <div class="d-flex align-items-center position-relative z-index-2 w-100">
                     <div class="flex-grow-1">
@@ -273,7 +273,7 @@ function renderSchemaCard($schemaName, $schemaData) {
                             </div>
                             
                             <!-- Configurações específicas para string -->
-                            <div id="string-options" style="display: none;">
+                            <div id="string-options" class="schema-type-options">
                                 <div class="mb-3">
                                     <label class="form-label">Formato</label>
                                     <select class="form-select" id="schema-format">
@@ -305,7 +305,7 @@ function renderSchemaCard($schemaName, $schemaData) {
                             </div>
                             
                             <!-- Configurações específicas para number/integer -->
-                            <div id="number-options" style="display: none;">
+                            <div id="number-options" class="schema-type-options">
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="mb-3">
@@ -332,7 +332,7 @@ function renderSchemaCard($schemaName, $schemaData) {
                             </div>
                             
                             <!-- Configurações específicas para array -->
-                            <div id="array-options" style="display: none;">
+                            <div id="array-options" class="schema-type-options">
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="mb-3">
@@ -419,7 +419,7 @@ function renderSchemaCard($schemaName, $schemaData) {
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
                 <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
-                    <div class="bg-primary w-100 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <div class="bg-primary w-100 h-100 gradient-bg-purple"></div>
                 </div>
                 <div class="d-flex align-items-center position-relative z-index-2 w-100">
                     <div class="flex-grow-1">
@@ -533,18 +533,18 @@ function handleTypeChange() {
     const type = document.getElementById('schema-type').value;
     
     // Esconder todas as opções específicas
-    document.getElementById('string-options').style.display = 'none';
-    document.getElementById('number-options').style.display = 'none';
-    document.getElementById('array-options').style.display = 'none';
+    document.getElementById('string-options').classList.remove('show');
+    document.getElementById('number-options').classList.remove('show');
+    document.getElementById('array-options').classList.remove('show');
     document.getElementById('object-properties').style.display = 'none';
     
     // Mostrar opções relevantes
     if (type === 'string') {
-        document.getElementById('string-options').style.display = 'block';
+        document.getElementById('string-options').classList.add('show');
     } else if (type === 'number' || type === 'integer') {
-        document.getElementById('number-options').style.display = 'block';
+        document.getElementById('number-options').classList.add('show');
     } else if (type === 'array') {
-        document.getElementById('array-options').style.display = 'block';
+        document.getElementById('array-options').classList.add('show');
     } else if (type === 'object') {
         document.getElementById('object-properties').style.display = 'block';
     }

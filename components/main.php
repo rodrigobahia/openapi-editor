@@ -82,7 +82,7 @@ $paths = $openApiData['paths'] ?? new stdClass();
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
                 <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
-                    <div class="bg-primary w-100 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <div class="bg-primary w-100 h-100 gradient-bg-purple"></div>
                 </div>
                 <div class="d-flex align-items-center position-relative z-index-2 w-100">
                     <div class="endpoint-preview-header me-4">
@@ -131,7 +131,7 @@ $paths = $openApiData['paths'] ?? new stdClass();
                         </div>
                         <div class="col-md-6">
                             <label for="endpoint-tags" class="form-label">Tags</label>
-                            <select multiple class="form-select" id="endpoint-tags" style="min-height: 80px;" onchange="handleTagSelection()">
+                            <select multiple class="form-select multi-select-tags" id="endpoint-tags" onchange="handleTagSelection()">
                                 <!-- As opções serão preenchidas dinamicamente via JavaScript -->
                             </select>
                             <div class="form-text">
@@ -1470,7 +1470,7 @@ function showToast(type, message) {
     
     const toastHtml = `
         <div class="toast align-items-center text-white ${colors[type]} border-0 position-fixed" 
-             style="top: 20px; right: 20px; z-index: 9999;" role="alert">
+             class="toast-notification" role="alert">
             <div class="d-flex">
                 <div class="toast-body">
                     <i class="fas ${icons[type]} me-2"></i>${message}

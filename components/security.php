@@ -200,7 +200,7 @@ function isGlobalSecurityEnabled($security, $schemeName) {
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
                 <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
-                    <div class="bg-primary w-100 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <div class="bg-primary w-100 h-100 gradient-bg-purple"></div>
                 </div>
                 <div class="d-flex align-items-center position-relative z-index-2 w-100">
                     <div class="flex-grow-1">
@@ -356,7 +356,7 @@ function updateSchemeFields() {
                             <option value="digest">Digest Auth</option>
                         </select>
                     </div>
-                    <div class="col-md-6" id="bearer-format-container" style="display: none;">
+                    <div class="col-md-6 bearer-format-container" id="bearer-format-container">
                         <label class="form-label">Formato do Bearer</label>
                         <input type="text" class="form-control" id="bearer-format"
                                placeholder="JWT, opaque">
@@ -438,9 +438,9 @@ function updateHttpFields() {
     const bearerContainer = document.getElementById('bearer-format-container');
     
     if (scheme === 'bearer') {
-        bearerContainer.style.display = 'block';
+        bearerContainer.classList.add('show');
     } else {
-        bearerContainer.style.display = 'none';
+        bearerContainer.classList.remove('show');
     }
 }
 
@@ -737,7 +737,7 @@ function escapeHtml(text) {
 
 function showSuccessMessage(message) {
     const toastHtml = `
-        <div class="toast align-items-center text-white bg-success border-0 position-fixed" style="top: 20px; right: 20px; z-index: 9999;" role="alert">
+        <div class="toast align-items-center text-white bg-success border-0 toast-notification" role="alert">
             <div class="d-flex">
                 <div class="toast-body">
                     <i class="fas fa-check me-2"></i>${message}
