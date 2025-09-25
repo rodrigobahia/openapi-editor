@@ -20,8 +20,10 @@ docs/
 │   └── SECURITY_DEPLOY.md   # Segurança em produção
 │
 ├── 📈 updates/
-│   ├── IMPROVEMENTS.md       # Recursos e funcionalidades
-│   └── CHANGELOG.md         # Histórico de mudanças
+│   ├── INDEX.md             # Índice de atualizações
+│   ├── CHANGELOG.md         # Histórico técnico completo
+│   ├── RELEASE_NOTES.md     # Notas de release para usuários
+│   └── IMPROVEMENTS.md      # Melhorias e otimizações
 │
 └── 📋 project/
     ├── CODE_OF_CONDUCT.md   # Código de conduta
