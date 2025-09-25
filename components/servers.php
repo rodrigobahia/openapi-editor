@@ -230,4 +230,41 @@ function addVariable(button) {
 function removeVariable(button) {
     button.closest('.row').remove();
 }
+
+// Serializa os dados do formulário antes do submit
+const serversForm = document.getElementById('servers-form');
+if (serversForm) {
+    serversForm.addEventListener('submit', function(e) {
+        // Monta array de servidores
+        const serverItems = document.querySelectorAll('.server-item');
+        const serversArr = [];
+        serverItems.forEach((item, idx) => {
+            const url = item.querySelector('input[name^="servers"][name$="[url]"]')?.value || '';
+            const description = item.querySelector('input[name^="servers"][name$="[description]"]')?.value || '';
+            // Variáveis
+            const variables = {};
+            const varRows = item.querySelectorAll('.variables-container .row');
+            varRows.forEach(row => {
+                const name = row.querySelector('input[placeholder="Nome da variável"]')?.value;
+                const def = row.querySelector('input[placeholder="Valor padrão"]')?.value;
+                const desc = row.querySelector('input[placeholder="Descrição da variável"]')?.value;
+                if (name) {
+                    variables[name] = { default: def, description: desc };
+                }
+            });
+            const serverObj = { url, description };
+            if (Object.keys(variables).length > 0) serverObj.variables = variables;
+            serversArr.push(serverObj);
+        });
+        // Cria campo oculto
+        let hidden = serversForm.querySelector('input[name="servers_data"]');
+        if (!hidden) {
+            hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'servers_data';
+            serversForm.appendChild(hidden);
+        }
+        hidden.value = JSON.stringify(serversArr);
+    });
+}
 </script>
