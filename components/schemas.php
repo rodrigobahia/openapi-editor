@@ -164,13 +164,16 @@ function renderSchemaCard($schemaName, $schemaData) {
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-sitemap me-2"></i>
-                    <?php echo t('schemas'); ?> - Definição de Esquemas
-                </h5>
-                <button type="button" class="btn btn-success btn-sm" onclick="addSchema()">
-                    <i class="fas fa-plus"></i>
+            <div class="card-header component-header-gradient d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-sitemap me-2"></i>
+                        <?php echo t('schemas'); ?> - Definição de Esquemas
+                    </h5>
+                    <p class="mb-0">Defina a estrutura dos dados utilizados nos requests e responses</p>
+                </div>
+                <button type="button" class="btn btn-light btn-sm" onclick="showSchemaModal()">
+                    <i class="fas fa-plus me-2"></i>
                     Adicionar Schema
                 </button>
             </div>
@@ -204,13 +207,9 @@ function renderSchemaCard($schemaName, $schemaData) {
                         <?php endif; ?>
                     </div>
                     
-                    <div class="mt-4 d-flex justify-content-between">
-                        <button type="button" class="btn btn-success" onclick="showSchemaModal()">
-                            <i class="fas fa-plus me-1"></i>
-                            Adicionar Esquema
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>
+                    <div class="mt-4 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-component-save">
+                            <i class="fas fa-check me-2"></i>
                             Salvar Esquemas
                         </button>
                     </div>
@@ -232,14 +231,22 @@ function renderSchemaCard($schemaName, $schemaData) {
 
 <!-- Modal para Criação/Edição de Schema -->
 <div class="modal fade" id="schemaModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-cube me-2"></i>
-                    <span id="modal-title">Criar Esquema</span>
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-fullscreen-xl-down modal-xl">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+                    <div class="bg-primary w-100 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                </div>
+                <div class="d-flex align-items-center position-relative z-index-2 w-100">
+                    <div class="flex-grow-1">
+                        <h5 class="modal-title mb-1 fw-bold">
+                            <i class="fas fa-cube me-2"></i>
+                            <span id="modal-title">Configurar Esquema</span>
+                        </h5>
+                        <small class="opacity-75">Defina as estruturas de dados da sua API</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
             </div>
             <div class="modal-body">
                 <form id="schema-form">
@@ -392,10 +399,13 @@ function renderSchemaCard($schemaName, $schemaData) {
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="saveSchema()">
-                    <i class="fas fa-save me-1"></i>
+            <div class="modal-footer border-0 bg-light px-4 py-3 d-flex justify-content-end gap-3">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-save" onclick="saveSchema()">
+                    <i class="fas fa-check me-2"></i>
                     Salvar Esquema
                 </button>
             </div>
@@ -405,23 +415,34 @@ function renderSchemaCard($schemaName, $schemaData) {
 
 <!-- Modal para Visualizar Exemplo -->
 <div class="modal fade" id="exampleModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-eye me-2"></i>
-                    Exemplo de Dados
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-fullscreen-xl-down modal-xl">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+                    <div class="bg-primary w-100 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                </div>
+                <div class="d-flex align-items-center position-relative z-index-2 w-100">
+                    <div class="flex-grow-1">
+                        <h5 class="modal-title mb-1 fw-bold">
+                            <i class="fas fa-eye me-2"></i>
+                            Exemplo de Dados
+                        </h5>
+                        <small class="opacity-75">Visualize como os dados ficam estruturados</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
             </div>
             <div class="modal-body">
                 <div id="example-content"></div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" onclick="copyExample()">
-                    <i class="fas fa-copy me-1"></i>
-                    Copiar
+            <div class="modal-footer border-0 bg-light px-4 py-3 d-flex justify-content-end gap-3">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Fechar
+                </button>
+                <button type="button" class="btn btn-save" onclick="copyExample()">
+                    <i class="fas fa-copy me-2"></i>
+                    Copiar Exemplo
                 </button>
             </div>
         </div>
@@ -447,7 +468,9 @@ function showSchemaModal(schemaName = null) {
         resetSchemaForm();
     }
     
-    new bootstrap.Modal(document.getElementById('schemaModal')).show();
+    // Usar getOrCreateInstance para evitar conflitos
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('schemaModal'));
+    modal.show();
     updatePreview();
 }
 
@@ -759,7 +782,8 @@ function saveSchema() {
     currentSchemas[schemaName] = schema;
     
     // Fechar modal
-    bootstrap.Modal.getInstance(document.getElementById('schemaModal')).hide();
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('schemaModal'));
+    modal.hide();
     
     // Recarregar interface
     refreshSchemasDisplay();

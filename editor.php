@@ -382,26 +382,6 @@ $currentSection = $_GET['section'] ?? 'header';
         .btn:hover {
             transform: translateY(-1px);
         }
-
-        /* Section Header */
-        .section-header {
-            background: linear-gradient(135deg, var(--bs-primary), var(--bs-primary-dark, #0d6efd));
-            color: white;
-            border-radius: 12px 12px 0 0;
-            padding: 1.5rem;
-            margin: -1px -1px 0 -1px;
-        }
-
-        .section-header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .section-header p {
-            margin: 0.5rem 0 0 0;
-            opacity: 0.9;
-        }
     </style>
 </head>
 
@@ -562,7 +542,7 @@ $currentSection = $_GET['section'] ?? 'header';
     <main class="py-4" role="main" itemscope itemtype="http://schema.org/WebPageElement">
         <div class="container">
             <!-- Breadcrumb Navigation -->
-            <nav aria-label="breadcrumb" class="d-none d-md-block mb-3">
+            <!-- <nav aria-label="breadcrumb" class="d-none d-md-block mb-3">
                 <ol class="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
                     <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
                         <a href="index.php" itemprop="item">
@@ -581,7 +561,7 @@ $currentSection = $_GET['section'] ?? 'header';
                         <meta itemprop="position" content="3" />
                     </li>
                 </ol>
-            </nav>
+            </nav> -->
 
             <!-- Status Messages -->
             <?php if (isset($message)): ?>
@@ -595,49 +575,8 @@ $currentSection = $_GET['section'] ?? 'header';
             <div class="row">
                 <div class="col-12">
                     <article class="editor-content-card" itemscope itemtype="http://schema.org/CreativeWork">
-                        <!-- Section Header -->
-                        <header class="section-header" itemscope itemtype="http://schema.org/WPHeader">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <h1 itemprop="headline">
-                                        <?php
-                                        $sectionTitles = [
-                                            'header' => 'API Information',
-                                            'servers' => 'Server Configuration',
-                                            'security' => 'Security Settings',
-                                            'tags' => 'Tag Management',
-                                            'main' => 'Paths & Operations',
-                                            'schemas' => 'Schema Definitions'
-                                        ];
-                                        echo $sectionTitles[$currentSection] ?? 'Editor';
-                                        ?>
-                                    </h1>
-                                    <p itemprop="description">
-                                        <?php
-                                        $sectionDescriptions = [
-                                            'header' => 'Configure basic API information, version, and metadata',
-                                            'servers' => 'Define API servers and environments',
-                                            'security' => 'Manage authentication and authorization schemes',
-                                            'tags' => 'Organize endpoints with tags and categories',
-                                            'main' => 'Define API paths, operations, and endpoints',
-                                            'schemas' => 'Create and manage data model schemas'
-                                        ];
-                                        echo $sectionDescriptions[$currentSection] ?? 'Edit your OpenAPI specification';
-                                        ?>
-                                    </p>
-                                </div>
-                                <!-- <div class="col-md-4 text-end">
-                                    <button class="btn btn-outline-secondary btn-sm" id="save-section" title="Save your changes to the OpenAPI specification" style="font-size: 0.75rem; opacity: 0.7;">
-                                        <i class="fas fa-save me-1"></i>
-                                        <span class="d-none d-lg-inline">Save</span>
-                                        <span class="d-lg-none">💾</span>
-                                    </button>
-                                </div> -->
-                            </div>
-                </div>
-
-                <!-- Content Body -->
-                <div class="card-body p-4">
+                        <!-- Content Body -->
+                        <div class="card-body p-0">
                     <?php
                     $componentFile = "components/{$currentSection}.php";
                     if (file_exists($componentFile)) {
@@ -698,60 +637,7 @@ $currentSection = $_GET['section'] ?? 'header';
         window.currentFile = '<?php echo htmlspecialchars($filename); ?>';
         window.currentSection = '<?php echo htmlspecialchars($currentSection); ?>';
 
-        // Simple editor initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeEditorActions();
-        });
 
-        function initializeEditorActions() {
-            // Save section - with proper form submission
-            const saveBtn = document.getElementById('save-section');
-            if (saveBtn) {
-                saveBtn.addEventListener('click', function() {
-                    // Show loading state
-                    const originalText = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
-                    this.disabled = true;
-
-                    // Create form data for the current section
-                    const formData = new FormData();
-                    formData.append('save_section', '1');
-                    formData.append('section', window.currentSection);
-
-                    // Simulate API call (replace with actual save logic)
-                    fetch(window.location.href, {
-                            method: 'POST',
-                            body: formData
-                        })
-                        .then(response => response.text())
-                        .then(data => {
-                            // Show success state
-                            this.innerHTML = '<i class="fas fa-check me-2"></i>Saved Successfully!';
-                            this.className = 'btn btn-success btn-lg';
-
-                            // Reset after delay
-                            setTimeout(() => {
-                                this.innerHTML = originalText;
-                                this.className = 'btn btn-light btn-lg';
-                                this.disabled = false;
-                            }, 2000);
-                        })
-                        .catch(error => {
-                            // Show error state
-                            this.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error Saving';
-                            this.className = 'btn btn-danger btn-lg';
-
-                            // Reset after delay
-                            setTimeout(() => {
-                                this.innerHTML = originalText;
-                                this.className = 'btn btn-light btn-lg';
-                                this.disabled = false;
-                            }, 2000);
-
-                        });
-                });
-            }
-        }
 
         // Export functionality
         function exportFile(format) {

@@ -1,1 +1,78 @@
 // Components - Buttons
+
+// Botões customizados do sistema
+.btn-cancel {
+    background-color: #fff;
+    color: #6c757d;
+    border: 2px solid #dee2e6;
+    padding: 10px 24px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: #f8f9fa;
+        color: #495057;
+        border-color: #adb5bd;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.15);
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.25);
+    }
+}
+
+.btn-save {
+    background-color: #198754;
+    color: #fff;
+    border: 2px solid #198754;
+    padding: 10px 24px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: #157347;
+        border-color: #146c43;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+    }
+}
+
+// Estilo para botões de ação dos componentes (igual ao modal)
+.btn-component-save {
+    background-color: #198754;
+    color: #fff;
+    border: 2px solid #198754;
+    padding: 10px 24px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: #157347;
+        border-color: #146c43;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+    }
+
+    &:active {
+        background-color: #146c43;
+        border-color: #13653f;
+        color: #fff;
+    }
+}

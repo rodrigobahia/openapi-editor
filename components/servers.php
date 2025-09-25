@@ -6,13 +6,16 @@ $servers = $openApiData['servers'] ?? [];
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-server me-2"></i>
-                    <?php echo t('servers'); ?> - Configuração dos Servidores
-                </h5>
-                <button type="button" class="btn btn-success btn-sm" onclick="addServer()">
-                    <i class="fas fa-plus"></i>
+            <div class="card-header component-header-gradient d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-server me-2"></i>
+                        <?php echo t('servers'); ?> - Configuração dos Servidores
+                    </h5>
+                    <p class="mb-0">Defina os servidores onde sua API estará disponível</p>
+                </div>
+                <button type="button" class="btn btn-light btn-sm" onclick="addServer()">
+                    <i class="fas fa-plus me-2"></i>
                     Adicionar Servidor
                 </button>
             </div>
@@ -115,8 +118,8 @@ $servers = $openApiData['servers'] ?? [];
                     </div>
                     
                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>
+                        <button type="submit" class="btn btn-component-save">
+                            <i class="fas fa-check me-2"></i>
                             Salvar Servidores
                         </button>
                     </div>

@@ -6,11 +6,12 @@ $info = $openApiData['info'] ?? [];
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
+            <div class="card-header component-header-gradient">
+                <h5 class="card-title mb-1">
                     <i class="fas fa-info-circle me-2"></i>
                     <?php echo t('header'); ?> - Informações da API
                 </h5>
+                <p class="mb-0">Configure as informações básicas da sua API OpenAPI</p>
             </div>
             <div class="card-body">
                 <form method="POST" onsubmit="return serializeDataBeforeSubmit(this);">
@@ -107,8 +108,8 @@ $info = $openApiData['info'] ?? [];
                     </div>
                     
                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>
+                        <button type="submit" class="btn btn-component-save">
+                            <i class="fas fa-check me-2"></i>
                             Salvar Alterações
                         </button>
                     </div>

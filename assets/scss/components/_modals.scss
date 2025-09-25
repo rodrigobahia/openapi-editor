@@ -1,1 +1,86 @@
 // Components - Modals
+
+// Estilos para tabs melhoradas nos modais
+.nav-pills {
+    .nav-link {
+        color: #6c757d;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background-color: #fff !important;
+        border: 2px solid #dee2e6;
+
+        &:hover {
+            background-color: #fff !important;
+            color: #6610f2;
+            transform: translateY(-1px);
+            border-color: rgba(102, 16, 242, 0.3);
+        }
+
+        &.active {
+            background-color: #fff !important;
+            color: #6610f2;
+            border-color: #6610f2;
+            box-shadow: 0 4px 12px rgba(102, 16, 242, 0.2);
+        }
+    }
+}
+
+// Estilo do conteúdo das tabs
+.tab-content {
+    background: #fff;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-top: 1rem;
+}
+
+// Select de tags customizado
+#endpoint-tags {
+    border: 2px dashed #dee2e6;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+        border-color: #0d6efd;
+        border-style: solid;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+}
+
+// Footer dos modais
+.modal-footer {
+    justify-content: flex-end !important;
+}
+
+// Header com gradiente para modais
+.modal-header-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .modal-title {
+        color: #fff;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .btn-close-white {
+        filter: brightness(0) invert(1);
+        opacity: 0.8;
+        
+        &:hover {
+            opacity: 1;
+        }
+    }
+}

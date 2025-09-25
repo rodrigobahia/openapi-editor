@@ -7,13 +7,16 @@ $securitySchemes = $openApiData['components']['securitySchemes'] ?? [];
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-shield-alt me-2"></i>
-                    <?php echo t('security'); ?> - Configurações de Segurança
-                </h5>
-                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addSecuritySchemeModal">
-                    <i class="fas fa-plus"></i>
+            <div class="card-header component-header-gradient d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <?php echo t('security'); ?> - Configurações de Segurança
+                    </h5>
+                    <p class="mb-0">Configure os esquemas de autenticação e autorização da API</p>
+                </div>
+                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addSecuritySchemeModal">
+                    <i class="fas fa-plus me-2"></i>
                     Adicionar Esquema
                 </button>
             </div>
@@ -90,8 +93,8 @@ $securitySchemes = $openApiData['components']['securitySchemes'] ?? [];
                     <?php endif; ?>
                     
                     <div class="d-flex justify-content-end mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>
+                        <button type="submit" class="btn btn-component-save">
+                            <i class="fas fa-check me-2"></i>
                             Salvar Configurações de Segurança
                         </button>
                     </div>
@@ -193,14 +196,22 @@ function isGlobalSecurityEnabled($security, $schemeName) {
 
 <!-- Modal para Adicionar/Editar Esquema de Segurança -->
 <div class="modal fade" id="addSecuritySchemeModal" tabindex="-1" aria-labelledby="addSecuritySchemeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addSecuritySchemeModalLabel">
-                    <i class="fas fa-plus me-2"></i>
-                    Adicionar Esquema de Segurança
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-fullscreen-xl-down modal-xl">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+                    <div class="bg-primary w-100 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                </div>
+                <div class="d-flex align-items-center position-relative z-index-2 w-100">
+                    <div class="flex-grow-1">
+                        <h5 class="modal-title mb-1 fw-bold" id="addSecuritySchemeModalLabel">
+                            <i class="fas fa-plus me-2"></i>
+                            Configurar Esquema de Segurança
+                        </h5>
+                        <small class="opacity-75">Defina os métodos de autenticação da sua API</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
             </div>
             <div class="modal-body">
                 <form id="security-scheme-form">
@@ -235,10 +246,13 @@ function isGlobalSecurityEnabled($security, $schemeName) {
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="saveSecurityScheme()">
-                    <i class="fas fa-save me-1"></i>
+            <div class="modal-footer border-0 bg-light px-4 py-3 d-flex justify-content-end gap-3">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-save" onclick="saveSecurityScheme()">
+                    <i class="fas fa-check me-2"></i>
                     Salvar Esquema
                 </button>
             </div>

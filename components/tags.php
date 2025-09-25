@@ -6,13 +6,16 @@ $tags = $openApiData['tags'] ?? [];
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-tags me-2"></i>
-                    <?php echo t('tags'); ?> - Organização das Tags
-                </h5>
-                <button type="button" class="btn btn-success btn-sm" onclick="addTag()">
-                    <i class="fas fa-plus"></i>
+            <div class="card-header component-header-gradient d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-tags me-2"></i>
+                        <?php echo t('tags'); ?> - Organização das Tags
+                    </h5>
+                    <p class="mb-0">Organize e categorize os endpoints da sua API</p>
+                </div>
+                <button type="button" class="btn btn-light btn-sm" onclick="addTag()">
+                    <i class="fas fa-plus me-2"></i>
                     Adicionar Tag
                 </button>
             </div>
@@ -77,8 +80,8 @@ $tags = $openApiData['tags'] ?? [];
                     </div>
                     
                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>
+                        <button type="submit" class="btn btn-component-save">
+                            <i class="fas fa-check me-2"></i>
                             Salvar Tags
                         </button>
                     </div>

@@ -500,14 +500,22 @@ $files = getOpenAPIFiles();
 
   <!-- Security Modal -->
   <div class="modal fade" id="securityModal" tabindex="-1" aria-labelledby="securityModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="securityModalLabel">
-            <i class="fas fa-shield-alt me-2"></i>
-            Security Audit Report
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-fullscreen-xl-down modal-xl">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
+          <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+            <div class="bg-primary w-100 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+          </div>
+          <div class="d-flex align-items-center position-relative z-index-2 w-100">
+            <div class="flex-grow-1">
+              <h5 class="modal-title mb-1 fw-bold" id="securityModalLabel">
+                <i class="fas fa-shield-alt me-2"></i>
+                Relatório de Auditoria de Segurança
+              </h5>
+              <small class="opacity-75">Análise de vulnerabilidades e recomendações de segurança</small>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
         </div>
         <div class="modal-body">
           <div id="security-report-content">
@@ -519,11 +527,14 @@ $files = getOpenAPIFiles();
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="securityManager.exportAuditResults()">
-            <i class="fas fa-download me-1"></i>
-            Export Report
+        <div class="modal-footer border-0 bg-light px-4 py-3 d-flex justify-content-end gap-3">
+          <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+            <i class="fas fa-times me-2"></i>
+            Fechar
+          </button>
+          <button type="button" class="btn btn-save" onclick="securityManager.exportAuditResults()">
+            <i class="fas fa-download me-2"></i>
+            Exportar Relatório
           </button>
         </div>
       </div>
