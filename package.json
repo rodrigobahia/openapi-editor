@@ -1,0 +1,80 @@
+{
+  "name": "openapi-editor",
+  "version": "1.0.0",
+  "description": "Editor web completo para documentação OpenAPI/Swagger com interface moderna e recursos avançados",
+  "main": "index.js",
+  "homepage": "https://github.com/rodrigobahia/openapi-editor#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodrigobahia/openapi-editor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rodrigobahia/openapi-editor/issues"
+  },
+  "scripts": {
+    "dev": "gulp dev",
+    "build": "gulp build",
+    "watch": "gulp watch",
+    "clean": "gulp clean",
+    "serve": "gulp serve"
+  },
+  "keywords": [
+    "openapi",
+    "swagger",
+    "api",
+    "documentation",
+    "editor",
+    "web-editor",
+    "json",
+    "yaml",
+    "rest-api",
+    "api-docs",
+    "bootstrap",
+    "php",
+    "javascript",
+    "open-source"
+  ],
+  "author": {
+    "name": "Rodrigo Bahia",
+    "email": "contato@rodrigobahia.com",
+    "url": "https://www.linkedin.com/in/rohbahia/"
+  },
+  "contributors": [
+    {
+      "name": "Community Contributors",
+      "url": "https://github.com/rodrigobahia/openapi-editor/graphs/contributors"
+    }
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.29.3",
+    "del": "^7.1.0",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^8.0.0",
+    "gulp-clean": "^0.4.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-connect": "^5.7.0",
+    "gulp-notify": "^4.0.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^5.1.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-uglify": "^3.0.2",
+    "sass": "^1.69.0"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "> 1%",
+    "IE 11"
+  ],
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.0.1",
+    "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.13.1"
+  }
+}

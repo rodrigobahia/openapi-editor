@@ -1,0 +1,479 @@
+// Additional Ultra-Modern Component Styles
+// ==========================================
+
+// Ripple Effect for Buttons
+.modern-btn, .floating-action-btn {
+    position: relative;
+    overflow: hidden;
+    
+    .ripple-effect {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        pointer-events: none;
+    }
+    
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+}
+
+// Enhanced Loading System
+.ultra-modern-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    
+    &.show {
+        opacity: 1;
+    }
+    
+    .loader-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(8px);
+    }
+    
+    .loader-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+    }
+    
+    .loader-spinner {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 2rem;
+        
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            
+            &:nth-child(1) {
+                border-top: 3px solid var(--primary-color);
+                animation: spin 1s linear infinite;
+            }
+            
+            &:nth-child(2) {
+                border-right: 3px solid var(--secondary-color);
+                animation: spin 1.5s linear infinite reverse;
+            }
+            
+            &:nth-child(3) {
+                border-bottom: 3px solid var(--accent-color);
+                animation: spin 2s linear infinite;
+            }
+        }
+    }
+    
+    .loader-text {
+        font-size: 1.125rem;
+        font-weight: 500;
+        opacity: 0.9;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+}
+
+// Auto-save Indicator
+.autosave-indicator {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--success-color);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1050;
+    
+    &.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    
+    i {
+        margin-right: 0.5rem;
+    }
+}
+
+// Enhanced Tooltip System
+.ultra-modern-tooltip {
+    position: absolute;
+    background: var(--surface-glass);
+    backdrop-filter: blur(16px);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 1060;
+    box-shadow: var(--shadow-xl);
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    max-width: 300px;
+    
+    &.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    
+    .tooltip-content {
+        padding: 0.75rem 1rem;
+        white-space: normal;
+    }
+    
+    .tooltip-arrow {
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 12px;
+        height: 12px;
+        background: var(--surface-glass);
+        border: 1px solid var(--border-color);
+        border-bottom: none;
+        border-right: none;
+        transform: translateX(-50%) rotate(45deg);
+    }
+    
+    &.tooltip-top .tooltip-arrow {
+        top: auto;
+        bottom: -6px;
+        border: 1px solid var(--border-color);
+        border-top: none;
+        border-left: none;
+    }
+}
+
+// Scroll Animation Classes
+.animate-in {
+    animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Enhanced Progress Ring Animations
+.progress-ring {
+    .progress-ring-circle {
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: drop-shadow(0 0 4px rgba(79, 70, 229, 0.3));
+    }
+    
+    .progress-text {
+        font-family: 'JetBrains Mono', monospace;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+}
+
+// Advanced Button Hover Effects
+.section-link {
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(79, 70, 229, 0.1),
+            transparent
+        );
+        transition: left 0.5s ease;
+    }
+    
+    &:hover::before {
+        left: 100%;
+    }
+}
+
+.floating-action-btn {
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+        transform: translate(-50%, -50%);
+    }
+    
+    &:hover::after {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+// Enhanced Form Elements
+.modern-form-group {
+    position: relative;
+    margin-bottom: 2rem;
+    
+    .floating-label {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        color: var(--text-secondary);
+        font-size: 1rem;
+        font-weight: 400;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    .modern-input {
+        width: 100%;
+        padding: 1rem;
+        background: var(--surface-secondary);
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        font-size: 1rem;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+        
+        &:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            
+            + .floating-label {
+                top: -0.5rem;
+                left: 0.75rem;
+                font-size: 0.75rem;
+                font-weight: 500;
+                color: var(--primary-color);
+                background: var(--surface-primary);
+                padding: 0 0.5rem;
+            }
+        }
+        
+        &:not(:placeholder-shown) + .floating-label {
+            top: -0.5rem;
+            left: 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--surface-primary);
+            padding: 0 0.5rem;
+        }
+    }
+}
+
+// Status Indicators
+.status-indicator {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: pulse-dot 2s ease-in-out infinite;
+        
+        &.status-online {
+            background: var(--success-color);
+        }
+        
+        &.status-offline {
+            background: var(--error-color);
+        }
+        
+        &.status-pending {
+            background: var(--warning-color);
+        }
+    }
+    
+    @keyframes pulse-dot {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.7;
+            transform: scale(1.2);
+        }
+    }
+}
+
+// Glassmorphism Card Variants
+.glass-card {
+    background: var(--surface-glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent
+        );
+    }
+}
+
+// Advanced Scroll Indicators
+.scroll-progress {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--surface-tertiary);
+    z-index: 1030;
+    
+    .progress-bar {
+        height: 100%;
+        background: var(--gradient-primary);
+        width: 0%;
+        transition: width 0.1s ease;
+    }
+}
+
+// Responsive Enhancements
+@media (max-width: 768px) {
+    .ultra-modern-tooltip {
+        max-width: 250px;
+        font-size: 0.8125rem;
+        
+        .tooltip-content {
+            padding: 0.625rem 0.875rem;
+        }
+    }
+    
+    .autosave-indicator {
+        bottom: 1rem;
+        right: 1rem;
+        font-size: 0.8125rem;
+        padding: 0.625rem 0.875rem;
+    }
+    
+    .loader-spinner {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 1.5rem;
+    }
+}
+
+// Dark Theme Specific Adjustments
+[data-bs-theme="dark"] {
+    .ultra-modern-loader .loader-backdrop {
+        background: rgba(0, 0, 0, 0.9);
+    }
+    
+    .glass-card::before {
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent
+        );
+    }
+    
+    .section-link::before {
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(79, 70, 229, 0.15),
+            transparent
+        );
+    }
+}
+
+// Performance Optimizations
+.will-change-transform {
+    will-change: transform;
+}
+
+.will-change-opacity {
+    will-change: opacity;
+}
+
+.gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+// Print Styles (for documentation)
+@media print {
+    .ultra-modern-nav,
+    .editor-sections-nav,
+    .floating-action-btn,
+    .progress-ring,
+    .autosave-indicator,
+    .particle-background {
+        display: none !important;
+    }
+    
+    .editor-main-content {
+        padding-top: 0 !important;
+    }
+    
+    .content-card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+}

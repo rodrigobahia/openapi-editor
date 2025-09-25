@@ -1,0 +1,138 @@
+// =================================================================
+// Mixins - OpenAPI Editor
+// =================================================================
+
+// Media Queries
+@mixin media-breakpoint-up($name) {
+  $min: map-get($grid-breakpoints, $name);
+  @if $min != 0 {
+    @media (min-width: $min) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+@mixin media-breakpoint-down($name) {
+  $max: map-get($grid-breakpoints, $name) - 0.02;
+  @media (max-width: $max) {
+    @content;
+  }
+}
+
+// Hover effects
+@mixin hover-lift($transform: $card-hover-transform, $shadow: $card-hover-shadow) {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  
+  &:hover {
+    transform: $transform;
+    box-shadow: $shadow;
+  }
+}
+
+// Button variants
+@mixin button-variant($background, $border, $color: #fff) {
+  background-color: $background;
+  border-color: $border;
+  color: $color;
+
+  &:hover {
+    background-color: darken($background, 7.5%);
+    border-color: darken($border, 10%);
+    color: $color;
+  }
+
+  &:focus,
+  &.focus {
+    box-shadow: 0 0 0 0.2rem rgba($background, 0.25);
+  }
+}
+
+// Theme properties
+@mixin theme-property($property, $light-value, $dark-value) {
+  #{$property}: $light-value;
+  
+  [data-bs-theme="dark"] & {
+    #{$property}: $dark-value;
+  }
+}
+
+// Flexbox utilities
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Typography
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin font-size($size) {
+  font-size: $size;
+  line-height: $line-height-base;
+}
+
+// Borders and radius
+@mixin border-radius($radius: $border-radius) {
+  border-radius: $radius;
+}
+
+@mixin border-variant($color) {
+  border: $border-width solid $color;
+}
+
+// Animations
+@mixin fade-in($duration: 0.3s) {
+  opacity: 0;
+  animation: fadeIn $duration ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+// Loading spinner
+@mixin spinner($size: 1rem, $border-width: 0.125em) {
+  display: inline-block;
+  width: $size;
+  height: $size;
+  border: $border-width solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner 0.75s linear infinite;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Code blocks
+@mixin code-block {
+  font-family: $font-family-monospace;
+  font-size: $font-size-sm;
+  background-color: var(--bg-secondary);
+  padding: 0.75rem;
+  border-radius: $border-radius;
+  overflow-x: auto;
+}
+
+// Focus states
+@mixin focus-ring($color: $primary-color) {
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba($color, 0.25);
+}

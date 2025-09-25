@@ -1,0 +1,17 @@
+// =================================================================
+// Light Theme
+// =================================================================
+
+:root {
+  --bs-primary: #{$primary-color};
+  --bg-primary: #{$light-bg-primary};
+  --bg-secondary: #{$light-bg-secondary};
+  --text-primary: #{$light-text-primary};
+  --text-secondary: #{$light-text-secondary};
+  --border-color: #{$light-border-color};
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
