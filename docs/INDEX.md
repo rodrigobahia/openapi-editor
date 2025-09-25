@@ -43,6 +43,7 @@ docs/
 | [TECHNICAL_GUIDE.md](TECHNICAL_GUIDE.md) | Guia técnico detalhado | ✅ Completo |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Guia de contribuição | ✅ Completo |
 | [BACKLOG.md](BACKLOG.md) | Roadmap e funcionalidades | ✅ Completo |
+| [editor-auto-open-after-upload.md](development/editor-auto-open-after-upload.md) | Correção: abrir editor após upload | ✅ Completo |
 
 ### 🛡️ **Segurança**
 | Documento | Descrição | Status |
