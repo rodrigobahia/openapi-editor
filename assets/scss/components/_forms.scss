@@ -1,0 +1,35 @@
+// =================================================================
+// Forms Component
+// =================================================================
+
+.form-control {
+  @include theme-property(background-color, $light-bg-primary, $dark-bg-primary);
+  @include theme-property(border-color, $light-border-color, $dark-border-color);
+  @include theme-property(color, $light-text-primary, $dark-text-primary);
+  
+  &:focus {
+    @include focus-ring($primary-color);
+    @include theme-property(border-color, $primary-color, lighten($primary-color, 20%));
+  }
+}
+
+.form-select {
+  @include theme-property(background-color, $light-bg-primary, $dark-bg-primary);
+  @include theme-property(border-color, $light-border-color, $dark-border-color);
+  @include theme-property(color, $light-text-primary, $dark-text-primary);
+  
+  &:focus {
+    @include focus-ring($primary-color);
+    @include theme-property(border-color, $primary-color, lighten($primary-color, 20%));
+  }
+}
+
+.form-label {
+  @include theme-property(color, $light-text-primary, $dark-text-primary);
+  font-weight: $font-weight-bold;
+  margin-bottom: 0.5rem;
+}
+
+.form-text {
+  @include theme-property(color, $light-text-secondary, $dark-text-secondary);
+}

@@ -1,0 +1,706 @@
+<?php
+// Componente para edição de segurança da API
+$security = $openApiData['security'] ?? [];
+$securitySchemes = $openApiData['components']['securitySchemes'] ?? [];
+?>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <?php echo t('security'); ?> - Configurações de Segurança
+                </h5>
+                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addSecuritySchemeModal">
+                    <i class="fas fa-plus"></i>
+                    Adicionar Esquema
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Configure os esquemas de autenticação que sua API utiliza. Defina como os usuários devem se autenticar para acessar os endpoints protegidos.
+                </div>
+                
+                <form method="POST" id="security-form">
+                    <input type="hidden" name="save_section" value="1">
+                    <input type="hidden" name="section" value="security">
+                    
+                    <!-- Esquemas de Segurança Definidos -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">
+                            <i class="fas fa-key me-2"></i>
+                            Esquemas de Autenticação
+                        </h6>
+                        
+                        <div id="security-schemes-container">
+                            <?php if (empty($securitySchemes)): ?>
+                                <div class="text-center py-4" id="empty-schemes-state">
+                                    <i class="fas fa-shield-alt display-4 text-muted"></i>
+                                    <p class="text-muted mt-2">Nenhum esquema de segurança definido. Comece adicionando um esquema de autenticação!</p>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($securitySchemes as $schemeName => $schemeData): ?>
+                                    <?php echo renderSecurityScheme($schemeName, $schemeData); ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    
+                    <!-- Configuração Global de Segurança -->
+                    <?php if (!empty($securitySchemes)): ?>
+                        <div class="border-top pt-4">
+                            <h6 class="mb-3">
+                                <i class="fas fa-globe me-2"></i>
+                                Segurança Global da API
+                            </h6>
+                            <div class="alert alert-secondary">
+                                <small>Configure quais esquemas são obrigatórios para toda a API. Endpoints individuais podem sobrescrever essas configurações.</small>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Esquemas Obrigatórios</label>
+                                    <div class="security-requirements">
+                                        <?php foreach ($securitySchemes as $schemeName => $schemeData): ?>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       name="global_security[]" value="<?php echo htmlspecialchars($schemeName); ?>"
+                                                       id="global_<?php echo htmlspecialchars($schemeName); ?>"
+                                                       <?php echo isGlobalSecurityEnabled($security, $schemeName) ? 'checked' : ''; ?>>
+                                                <label class="form-check-label" for="global_<?php echo htmlspecialchars($schemeName); ?>">
+                                                    <span class="badge bg-<?php echo getSchemeTypeColor($schemeData['type']); ?> me-2">
+                                                        <?php echo strtoupper($schemeData['type']); ?>
+                                                    </span>
+                                                    <?php echo htmlspecialchars($schemeName); ?>
+                                                </label>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Configuração Atual</label>
+                                    <div class="bg-light p-3 rounded">
+                                        <pre class="mb-0"><code id="security-preview"><?php echo json_encode($security, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); ?></code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>
+                            Salvar Configurações de Segurança
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+function renderSecurityScheme($schemeName, $schemeData) {
+    $typeColor = getSchemeTypeColor($schemeData['type']);
+    $typeLabel = strtoupper($schemeData['type']);
+    
+    ob_start();
+    ?>
+    <div class="security-scheme-item border rounded p-3 mb-3" data-scheme-name="<?php echo htmlspecialchars($schemeName); ?>">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+                <h6 class="mb-1">
+                    <span class="badge bg-<?php echo $typeColor; ?> me-2"><?php echo $typeLabel; ?></span>
+                    <?php echo htmlspecialchars($schemeName); ?>
+                </h6>
+                <?php if (!empty($schemeData['description'])): ?>
+                    <p class="text-muted small mb-2"><?php echo htmlspecialchars($schemeData['description']); ?></p>
+                <?php endif; ?>
+                <div class="scheme-details">
+                    <?php echo renderSchemeDetails($schemeData); ?>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="editSecurityScheme('<?php echo htmlspecialchars($schemeName); ?>')" title="Editar esquema">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeSecurityScheme(this)" title="Remover esquema">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+function renderSchemeDetails($schemeData) {
+    $details = [];
+    
+    switch ($schemeData['type']) {
+        case 'apiKey':
+            $details[] = '<strong>Localização:</strong> ' . htmlspecialchars($schemeData['in'] ?? 'header');
+            $details[] = '<strong>Nome:</strong> ' . htmlspecialchars($schemeData['name'] ?? '');
+            break;
+            
+        case 'http':
+            $details[] = '<strong>Esquema:</strong> ' . htmlspecialchars($schemeData['scheme'] ?? '');
+            if (!empty($schemeData['bearerFormat'])) {
+                $details[] = '<strong>Formato:</strong> ' . htmlspecialchars($schemeData['bearerFormat']);
+            }
+            break;
+            
+        case 'oauth2':
+            if (!empty($schemeData['flows'])) {
+                $flows = array_keys($schemeData['flows']);
+                $details[] = '<strong>Fluxos:</strong> ' . implode(', ', $flows);
+            }
+            break;
+            
+        case 'openIdConnect':
+            if (!empty($schemeData['openIdConnectUrl'])) {
+                $details[] = '<strong>URL:</strong> ' . htmlspecialchars($schemeData['openIdConnectUrl']);
+            }
+            break;
+    }
+    
+    return '<div class="small text-muted">' . implode(' • ', $details) . '</div>';
+}
+
+function getSchemeTypeColor($type) {
+    $colors = [
+        'apiKey' => 'primary',
+        'http' => 'success',
+        'oauth2' => 'warning',
+        'openIdConnect' => 'info'
+    ];
+    return $colors[$type] ?? 'secondary';
+}
+
+function isGlobalSecurityEnabled($security, $schemeName) {
+    if (empty($security)) return false;
+    
+    foreach ($security as $requirement) {
+        if (isset($requirement[$schemeName])) {
+            return true;
+        }
+    }
+    return false;
+}
+?>
+
+<!-- Modal para Adicionar/Editar Esquema de Segurança -->
+<div class="modal fade" id="addSecuritySchemeModal" tabindex="-1" aria-labelledby="addSecuritySchemeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSecuritySchemeModalLabel">
+                    <i class="fas fa-plus me-2"></i>
+                    Adicionar Esquema de Segurança
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="security-scheme-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="scheme-name" class="form-label">Nome do Esquema</label>
+                            <input type="text" class="form-control" id="scheme-name" required 
+                                   placeholder="ex: bearerAuth, apiKey">
+                            <div class="form-text">Nome único para identificar este esquema</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="scheme-type" class="form-label">Tipo de Autenticação</label>
+                            <select class="form-select" id="scheme-type" required onchange="updateSchemeFields()">
+                                <option value="">Selecione o tipo</option>
+                                <option value="apiKey">API Key</option>
+                                <option value="http">HTTP Authentication</option>
+                                <option value="oauth2">OAuth 2.0</option>
+                                <option value="openIdConnect">OpenID Connect</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <label for="scheme-description" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="scheme-description" rows="2" 
+                                  placeholder="Descrição de como usar este esquema de autenticação..."></textarea>
+                    </div>
+                    
+                    <!-- Campos específicos por tipo -->
+                    <div id="scheme-specific-fields" class="mt-3">
+                        <!-- Campos dinâmicos baseados no tipo selecionado -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveSecurityScheme()">
+                    <i class="fas fa-save me-1"></i>
+                    Salvar Esquema
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentScheme = null;
+
+function updateSchemeFields() {
+    const type = document.getElementById('scheme-type').value;
+    const container = document.getElementById('scheme-specific-fields');
+    
+    let fieldsHtml = '';
+    
+    switch (type) {
+        case 'apiKey':
+            fieldsHtml = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Nome da API Key</label>
+                        <input type="text" class="form-control" id="api-key-name" required
+                               placeholder="X-API-Key, Authorization">
+                        <div class="form-text">Nome do header, query ou cookie</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Localização</label>
+                        <select class="form-select" id="api-key-in" required>
+                            <option value="header">Header</option>
+                            <option value="query">Query Parameter</option>
+                            <option value="cookie">Cookie</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            break;
+            
+        case 'http':
+            fieldsHtml = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Esquema HTTP</label>
+                        <select class="form-select" id="http-scheme" required onchange="updateHttpFields()">
+                            <option value="basic">Basic Auth</option>
+                            <option value="bearer">Bearer Token</option>
+                            <option value="digest">Digest Auth</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6" id="bearer-format-container" style="display: none;">
+                        <label class="form-label">Formato do Bearer</label>
+                        <input type="text" class="form-control" id="bearer-format"
+                               placeholder="JWT, opaque">
+                        <div class="form-text">Formato do token (opcional)</div>
+                    </div>
+                </div>
+            `;
+            break;
+            
+        case 'oauth2':
+            fieldsHtml = `
+                <div class="mb-3">
+                    <label class="form-label">Fluxos OAuth2</label>
+                    <div class="oauth2-flows">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="flow-implicit">
+                            <label class="form-check-label" for="flow-implicit">
+                                Implicit Flow
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="flow-password">
+                            <label class="form-check-label" for="flow-password">
+                                Password Flow
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="flow-clientCredentials">
+                            <label class="form-check-label" for="flow-clientCredentials">
+                                Client Credentials Flow
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="flow-authorizationCode">
+                            <label class="form-check-label" for="flow-authorizationCode">
+                                Authorization Code Flow
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div id="oauth2-urls" class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Authorization URL</label>
+                        <input type="url" class="form-control" id="authorization-url"
+                               placeholder="https://example.com/oauth/authorize">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Token URL</label>
+                        <input type="url" class="form-control" id="token-url"
+                               placeholder="https://example.com/oauth/token">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Scopes (um por linha)</label>
+                    <textarea class="form-control" id="oauth2-scopes" rows="4"
+                              placeholder="read:user&#10;write:user&#10;admin:system"></textarea>
+                    <div class="form-text">Defina os escopos disponíveis, um por linha</div>
+                </div>
+            `;
+            break;
+            
+        case 'openIdConnect':
+            fieldsHtml = `
+                <div class="mb-3">
+                    <label class="form-label">OpenID Connect URL</label>
+                    <input type="url" class="form-control" id="openid-connect-url" required
+                           placeholder="https://example.com/.well-known/openid_configuration">
+                    <div class="form-text">URL do discovery document</div>
+                </div>
+            `;
+            break;
+    }
+    
+    container.innerHTML = fieldsHtml;
+}
+
+function updateHttpFields() {
+    const scheme = document.getElementById('http-scheme').value;
+    const bearerContainer = document.getElementById('bearer-format-container');
+    
+    if (scheme === 'bearer') {
+        bearerContainer.style.display = 'block';
+    } else {
+        bearerContainer.style.display = 'none';
+    }
+}
+
+function saveSecurityScheme() {
+    const name = document.getElementById('scheme-name').value.trim();
+    const type = document.getElementById('scheme-type').value;
+    const description = document.getElementById('scheme-description').value.trim();
+    
+    if (!name || !type) {
+        alert('Por favor, preencha o nome e tipo do esquema.');
+        return;
+    }
+    
+    // Validar nome único
+    if (!currentScheme && document.querySelector(`[data-scheme-name="${name}"]`)) {
+        alert('Já existe um esquema com este nome. Escolha outro nome.');
+        return;
+    }
+    
+    const schemeData = {
+        type: type,
+        description: description
+    };
+    
+    // Adicionar campos específicos do tipo
+    switch (type) {
+        case 'apiKey':
+            const apiKeyName = document.getElementById('api-key-name').value.trim();
+            const apiKeyIn = document.getElementById('api-key-in').value;
+            
+            if (!apiKeyName) {
+                alert('Por favor, informe o nome da API Key.');
+                return;
+            }
+            
+            schemeData.name = apiKeyName;
+            schemeData.in = apiKeyIn;
+            break;
+            
+        case 'http':
+            const httpScheme = document.getElementById('http-scheme').value;
+            schemeData.scheme = httpScheme;
+            
+            if (httpScheme === 'bearer') {
+                const bearerFormat = document.getElementById('bearer-format').value.trim();
+                if (bearerFormat) {
+                    schemeData.bearerFormat = bearerFormat;
+                }
+            }
+            break;
+            
+        case 'oauth2':
+            const flows = {};
+            
+            if (document.getElementById('flow-implicit').checked) {
+                flows.implicit = {
+                    authorizationUrl: document.getElementById('authorization-url').value,
+                    scopes: parseScopesFromTextarea()
+                };
+            }
+            
+            if (document.getElementById('flow-password').checked) {
+                flows.password = {
+                    tokenUrl: document.getElementById('token-url').value,
+                    scopes: parseScopesFromTextarea()
+                };
+            }
+            
+            if (document.getElementById('flow-clientCredentials').checked) {
+                flows.clientCredentials = {
+                    tokenUrl: document.getElementById('token-url').value,
+                    scopes: parseScopesFromTextarea()
+                };
+            }
+            
+            if (document.getElementById('flow-authorizationCode').checked) {
+                flows.authorizationCode = {
+                    authorizationUrl: document.getElementById('authorization-url').value,
+                    tokenUrl: document.getElementById('token-url').value,
+                    scopes: parseScopesFromTextarea()
+                };
+            }
+            
+            if (Object.keys(flows).length === 0) {
+                alert('Selecione pelo menos um fluxo OAuth2.');
+                return;
+            }
+            
+            schemeData.flows = flows;
+            break;
+            
+        case 'openIdConnect':
+            const openIdUrl = document.getElementById('openid-connect-url').value.trim();
+            if (!openIdUrl) {
+                alert('Por favor, informe a URL do OpenID Connect.');
+                return;
+            }
+            
+            schemeData.openIdConnectUrl = openIdUrl;
+            break;
+    }
+    
+    // Criar HTML do esquema
+    const schemeHtml = createSecuritySchemeHtml(name, schemeData);
+    
+    // Adicionar ao container
+    const container = document.getElementById('security-schemes-container');
+    const emptyState = container.querySelector('#empty-schemes-state');
+    if (emptyState) {
+        emptyState.remove();
+    }
+    
+    if (currentScheme) {
+        // Editar existente
+        const existingItem = document.querySelector(`[data-scheme-name="${currentScheme}"]`);
+        existingItem.outerHTML = schemeHtml;
+    } else {
+        // Adicionar novo
+        container.insertAdjacentHTML('beforeend', schemeHtml);
+    }
+    
+    // Fechar modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addSecuritySchemeModal'));
+    modal.hide();
+    
+    // Reset form
+    document.getElementById('security-scheme-form').reset();
+    document.getElementById('scheme-specific-fields').innerHTML = '';
+    currentScheme = null;
+    
+    // Mostrar mensagem de sucesso
+    showSuccessMessage('Esquema de segurança salvo com sucesso!');
+    
+    // Atualizar preview da configuração
+    updateSecurityPreview();
+}
+
+function createSecuritySchemeHtml(name, schemeData) {
+    const typeColor = getSchemeTypeColorJS(schemeData.type);
+    const typeLabel = schemeData.type.toUpperCase();
+    const details = createSchemeDetailsHtml(schemeData);
+    
+    return `
+        <div class="security-scheme-item border rounded p-3 mb-3" data-scheme-name="${escapeHtml(name)}">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h6 class="mb-1">
+                        <span class="badge bg-${typeColor} me-2">${typeLabel}</span>
+                        ${escapeHtml(name)}
+                    </h6>
+                    ${schemeData.description ? `<p class="text-muted small mb-2">${escapeHtml(schemeData.description)}</p>` : ''}
+                    <div class="scheme-details">
+                        ${details}
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="editSecurityScheme('${escapeHtml(name)}')" title="Editar esquema">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeSecurityScheme(this)" title="Remover esquema">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function createSchemeDetailsHtml(schemeData) {
+    const details = [];
+    
+    switch (schemeData.type) {
+        case 'apiKey':
+            details.push(`<strong>Localização:</strong> ${schemeData.in || 'header'}`);
+            details.push(`<strong>Nome:</strong> ${schemeData.name || ''}`);
+            break;
+            
+        case 'http':
+            details.push(`<strong>Esquema:</strong> ${schemeData.scheme || ''}`);
+            if (schemeData.bearerFormat) {
+                details.push(`<strong>Formato:</strong> ${schemeData.bearerFormat}`);
+            }
+            break;
+            
+        case 'oauth2':
+            if (schemeData.flows) {
+                const flows = Object.keys(schemeData.flows);
+                details.push(`<strong>Fluxos:</strong> ${flows.join(', ')}`);
+            }
+            break;
+            
+        case 'openIdConnect':
+            if (schemeData.openIdConnectUrl) {
+                details.push(`<strong>URL:</strong> ${schemeData.openIdConnectUrl}`);
+            }
+            break;
+    }
+    
+    return `<div class="small text-muted">${details.join(' • ')}</div>`;
+}
+
+function getSchemeTypeColorJS(type) {
+    const colors = {
+        'apiKey': 'primary',
+        'http': 'success',
+        'oauth2': 'warning',
+        'openIdConnect': 'info'
+    };
+    return colors[type] || 'secondary';
+}
+
+function parseScopesFromTextarea() {
+    const textarea = document.getElementById('oauth2-scopes');
+    if (!textarea) return {};
+    
+    const scopes = {};
+    const lines = textarea.value.split('\n');
+    
+    lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed) {
+            // Formato: "scope:description" ou apenas "scope"
+            const parts = trimmed.split(':');
+            const scopeName = parts[0].trim();
+            const scopeDesc = parts.length > 1 ? parts.slice(1).join(':').trim() : scopeName;
+            scopes[scopeName] = scopeDesc;
+        }
+    });
+    
+    return scopes;
+}
+
+function editSecurityScheme(schemeName) {
+    currentScheme = schemeName;
+    
+    // Preencher modal com dados existentes (implementação simplificada)
+    document.getElementById('addSecuritySchemeModalLabel').innerHTML = '<i class="fas fa-edit me-2"></i>Editar Esquema de Segurança';
+    document.getElementById('scheme-name').value = schemeName;
+    
+    // Abrir modal
+    const modal = new bootstrap.Modal(document.getElementById('addSecuritySchemeModal'));
+    modal.show();
+}
+
+function removeSecurityScheme(button) {
+    if (confirm('Tem certeza que deseja remover este esquema de segurança?')) {
+        button.closest('.security-scheme-item').remove();
+        checkEmptySecurityState();
+        updateSecurityPreview();
+    }
+}
+
+function checkEmptySecurityState() {
+    const container = document.getElementById('security-schemes-container');
+    if (container.querySelectorAll('.security-scheme-item').length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-4" id="empty-schemes-state">
+                <i class="fas fa-shield-alt display-4 text-muted"></i>
+                <p class="text-muted mt-2">Nenhum esquema de segurança definido. Comece adicionando um esquema de autenticação!</p>
+            </div>
+        `;
+    }
+}
+
+function updateSecurityPreview() {
+    const preview = document.getElementById('security-preview');
+    if (!preview) return;
+    
+    // Construir preview da configuração de segurança
+    const security = [];
+    const checkboxes = document.querySelectorAll('input[name="global_security[]"]:checked');
+    
+    if (checkboxes.length > 0) {
+        const requirement = {};
+        checkboxes.forEach(cb => {
+            requirement[cb.value] = [];
+        });
+        security.push(requirement);
+    }
+    
+    preview.textContent = JSON.stringify(security, null, 2);
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+function showSuccessMessage(message) {
+    const toastHtml = `
+        <div class="toast align-items-center text-white bg-success border-0 position-fixed" style="top: 20px; right: 20px; z-index: 9999;" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check me-2"></i>${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', toastHtml);
+    const toast = new bootstrap.Toast(document.querySelector('.toast:last-child'));
+    toast.show();
+    
+    setTimeout(() => {
+        const toastEl = document.querySelector('.toast:last-child');
+        if (toastEl) toastEl.remove();
+    }, 5000);
+}
+
+// Event listeners
+document.addEventListener('change', function(e) {
+    if (e.target.name === 'global_security[]') {
+        updateSecurityPreview();
+    }
+});
+
+// Reset modal when closed
+document.getElementById('addSecuritySchemeModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('security-scheme-form').reset();
+    document.getElementById('scheme-specific-fields').innerHTML = '';
+    document.getElementById('addSecuritySchemeModalLabel').innerHTML = '<i class="fas fa-plus me-2"></i>Adicionar Esquema de Segurança';
+    currentScheme = null;
+});
+</script>

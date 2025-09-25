@@ -1,0 +1,51 @@
+// =================================================================
+// OpenAPI Editor - Main SCSS File
+// =================================================================
+
+// 1. Importações de variáveis e configurações
+@import 'abstracts/variables';
+@import 'abstracts/mixins';
+@import 'abstracts/functions';
+
+// 2. Vendors (Bootstrap customizado se necessário)
+// @import 'vendors/bootstrap-custom';
+
+// 3. Base styles
+@import 'base/reset';
+@import 'base/typography';
+@import 'base/helpers';
+
+// 4. Layout
+@import 'layout/header';
+@import 'layout/navigation';
+@import 'layout/footer';
+@import 'layout/grid';
+
+// 5. Components
+@import 'components/buttons';
+@import 'components/cards';
+@import 'components/modern-cards';
+@import 'components/ultra-modern';
+@import 'components/advanced-effects';
+@import 'components/notifications';
+@import 'components/forms';
+@import 'components/modals';
+@import 'components/alerts';
+@import 'components/editor';
+
+// 6. Pages específicas
+@import 'pages/home';
+@import 'pages/home-modern';
+@import 'pages/editor-modern';
+@import 'pages/preview-modern';
+@import 'pages/editor';
+@import 'pages/preview';
+
+// 7. Themes
+@import 'themes/light';
+@import 'themes/dark';
+
+// 8. Utilities
+@import 'utilities/spacing';
+@import 'utilities/display';
+@import 'utilities/colors';

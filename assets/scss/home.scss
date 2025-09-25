@@ -1,0 +1,42 @@
+// Home Page Only - Minimal CSS Bundle
+// ===================================
+
+// Core variables (essentials only)
+@import 'abstracts/variables';
+
+// Base styles (minimal)
+@import 'base/reset';
+@import 'base/typography-home';
+
+// Essential components only
+@import 'components/cards-home';
+
+// Home page specific
+@import 'pages/home-modern';
+@import 'pages/home-only';
+
+// Essential utilities
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-flex { display: flex !important; }
+.justify-content-center { justify-content: center !important; }
+.align-items-center { align-items: center !important; }
+.text-center { text-align: center !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.mb-4 { margin-bottom: 1.5rem !important; }
+.me-2 { margin-right: 0.5rem !important; }
+.p-3 { padding: 1rem !important; }
+
+// Theme system essentials
+[data-bs-theme="dark"] {
+  --background-primary: #0f172a;
+  --surface-primary: #1e293b;
+  --text-primary: #f1f5f9;
+}
+
+[data-bs-theme="light"] {
+  --background-primary: #ffffff;
+  --surface-primary: #f8fafc;
+  --text-primary: #1e293b;
+}

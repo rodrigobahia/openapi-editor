@@ -1,0 +1,47 @@
+// =================================================================
+// Functions - OpenAPI Editor
+// =================================================================
+
+// Convert px to rem
+@function rem($pixels, $context: 16) {
+  @return ($pixels / $context) * 1rem;
+}
+
+// Convert px to em
+@function em($pixels, $context: 16) {
+  @return ($pixels / $context) * 1em;
+}
+
+// Lighten color
+@function lighten-color($color, $percentage) {
+  @return lighten($color, $percentage);
+}
+
+// Darken color
+@function darken-color($color, $percentage) {
+  @return darken($color, $percentage);
+}
+
+// Get color from theme
+@function theme-color($key) {
+  @return map-get($theme-colors, $key);
+}
+
+// Calculate contrast
+@function contrast($color) {
+  $lightness: lightness($color);
+  
+  @if $lightness > 50% {
+    @return #000;
+  } @else {
+    @return #fff;
+  }
+}
+
+// Strip unit from number
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  @return $number;
+}

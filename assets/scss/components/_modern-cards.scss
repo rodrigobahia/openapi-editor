@@ -1,0 +1,189 @@
+// =================================================================
+// Modern Cards & Components
+// =================================================================
+
+.card-modern {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: $shadow-sm;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-lg;
+        border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .card-header {
+        background: transparent;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.5rem;
+        
+        .card-title {
+            margin: 0;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            
+            i {
+                font-size: 1.25rem;
+                color: $primary-color;
+            }
+        }
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+}
+
+.card-glass {
+    background: $glass-bg-light;
+    backdrop-filter: $glass-backdrop;
+    -webkit-backdrop-filter: $glass-backdrop;
+    border: 1px solid $glass-border;
+    
+    &[data-bs-theme="dark"] {
+        background: $glass-bg-dark;
+    }
+}
+
+// Gradient Cards
+.card-gradient {
+    background: $gradient-primary;
+    color: white;
+    border: none;
+    
+    .card-title,
+    .card-text {
+        color: white;
+    }
+    
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: $shadow-xl;
+    }
+}
+
+// Status Cards
+.card-status {
+    border-left: 4px solid;
+    
+    &.success {
+        border-left-color: $success-color;
+        
+        .card-header {
+            background: rgba(16, 185, 129, 0.1);
+        }
+    }
+    
+    &.warning {
+        border-left-color: $warning-color;
+        
+        .card-header {
+            background: rgba(245, 158, 11, 0.1);
+        }
+    }
+    
+    &.danger {
+        border-left-color: $danger-color;
+        
+        .card-header {
+            background: rgba(239, 68, 68, 0.1);
+        }
+    }
+    
+    &.info {
+        border-left-color: $info-color;
+        
+        .card-header {
+            background: rgba(59, 130, 246, 0.1);
+        }
+    }
+}
+
+// Feature Cards
+.feature-card {
+    text-align: center;
+    padding: 2rem;
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: $gradient-primary;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        
+        i {
+            font-size: 1.5rem;
+            color: white;
+        }
+    }
+    
+    .feature-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+    }
+    
+    .feature-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+}
+
+// Animated elements
+.animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Loading states
+.loading-skeleton {
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.1) 25%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        rgba(255, 255, 255, 0.1) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}

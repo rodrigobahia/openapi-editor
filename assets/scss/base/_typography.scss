@@ -1,0 +1,36 @@
+// =================================================================
+// Typography
+// =================================================================
+
+h1, h2, h3, h4, h5, h6 {
+  @include theme-property(color, $light-text-primary, $dark-text-primary);
+  font-weight: $font-weight-bold;
+  line-height: $line-height-sm;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+code {
+  @include code-block;
+  display: inline;
+  padding: 0.2em 0.4em;
+  font-size: 87.5%;
+}
+
+pre {
+  @include code-block;
+  display: block;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  overflow: auto;
+  
+  code {
+    padding: 0;
+    background-color: transparent;
+  }
+}
