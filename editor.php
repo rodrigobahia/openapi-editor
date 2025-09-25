@@ -130,8 +130,8 @@ $currentSection = $_GET['section'] ?? 'header';
     ?>
 
     <!-- Primary Meta Tags -->
-    <title>Editing <?php echo $projectName; ?> - <?php echo $sectionName; ?> | OpenAPI Editor</title>
-    <meta name="title" content="Editing <?php echo $projectName; ?> - <?php echo $sectionName; ?> | OpenAPI Editor">
+    <title><?php echo t('editing'); ?> <?php echo $projectName; ?> - <?php echo $sectionName; ?> | OpenAPI Editor</title>
+    <meta name="title" content="<?php echo t('editing'); ?> <?php echo $projectName; ?> - <?php echo $sectionName; ?> | OpenAPI Editor">
     <meta name="description" content="Edit <?php echo $projectName; ?> OpenAPI specification - <?php echo $sectionName; ?> section. Professional API documentation editor with real-time validation, visual design tools, and comprehensive OpenAPI 3.0 support.">
     <meta name="keywords" content="<?php echo $projectName; ?>, OpenAPI Editor, <?php echo $sectionName; ?>, API Documentation, Swagger Editor, REST API Design, API Specification, Developer Tools, OpenAPI 3.0">
     <meta name="author" content="OpenAPI Editor Team">

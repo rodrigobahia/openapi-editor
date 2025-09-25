@@ -344,8 +344,8 @@ $jsonData = json_encode($openApiData);
                         <i class="fas fa-arrow-left"></i>
                     </div>
                     <div class="brand-text">
-                        <span class="brand-title">Back to Editor</span>
-                        <span class="brand-subtitle">Continue Editing</span>
+                        <span class="brand-title"><?php echo t('back_to_editor'); ?></span>
+                        <span class="brand-subtitle"><?php echo t('continue_editing'); ?></span>
                     </div>
                 </a>
                 
@@ -354,26 +354,26 @@ $jsonData = json_encode($openApiData);
                         <i class="fas fa-eye"></i>
                     </div>
                     <div class="file-info">
-                        <span class="file-name">Preview: <?php echo htmlspecialchars(pathinfo($filename, PATHINFO_FILENAME)); ?></span>
-                        <span class="file-type">Swagger Documentation</span>
+                        <span class="file-name"><?php echo t('preview'); ?>: <?php echo htmlspecialchars(pathinfo($filename, PATHINFO_FILENAME)); ?></span>
+                        <span class="file-type"><?php echo t('swagger_documentation'); ?></span>
                     </div>
                 </div>
             </div>
             
             <div class="nav-actions">
                 <!-- Theme Toggle -->
-                <button class="modern-btn btn-theme" id="theme-toggle" data-tooltip="Toggle Theme">
+                <button class="modern-btn btn-theme" id="theme-toggle" data-tooltip="<?php echo t('toggle_theme'); ?>">
                     <i class="fas fa-moon theme-icon"></i>
                 </button>
                 
                 <!-- Fullscreen Toggle -->
-                <button class="modern-btn btn-fullscreen" id="fullscreen-toggle" data-tooltip="Toggle Fullscreen">
+                <button class="modern-btn btn-fullscreen" id="fullscreen-toggle" data-tooltip="<?php echo t('toggle_fullscreen'); ?>">
                     <i class="fas fa-expand"></i>
                 </button>
                 
                 <!-- Download API -->
                 <a href="export.php?file=<?php echo urlencode($filename); ?>&format=json" 
-                   class="modern-btn btn-download" data-tooltip="Download OpenAPI JSON">
+                   class="modern-btn btn-download" data-tooltip="<?php echo t('download_openapi_json'); ?>"
                     <i class="fas fa-download"></i>
                 </a>
             </div>

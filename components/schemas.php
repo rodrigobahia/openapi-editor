@@ -168,19 +168,19 @@ function renderSchemaCard($schemaName, $schemaData) {
                 <div>
                     <h5 class="card-title mb-1">
                         <i class="fas fa-sitemap me-2"></i>
-                        <?php echo t('schemas'); ?> - Definição de Esquemas
+                        <?php echo t('schemas'); ?> - <?php echo t('schema_definition'); ?>
                     </h5>
-                    <p class="mb-0">Defina a estrutura dos dados utilizados nos requests e responses</p>
+                    <p class="mb-0"><?php echo t('schemas_description'); ?></p>
                 </div>
                 <button type="button" class="btn btn-light btn-sm" onclick="showSchemaModal()">
                     <i class="fas fa-plus me-2"></i>
-                    Adicionar Schema
+                    <?php echo t('add_schema'); ?>
                 </button>
             </div>
             <div class="card-body">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    Os esquemas definem a estrutura dos dados utilizados pela sua API. Eles são referenciados nos requests e responses e garantem consistência na documentação.
+                    <?php echo t('schemas_info'); ?>
                 </div>
                 
                 <form method="POST" id="schemas-form">
@@ -193,8 +193,8 @@ function renderSchemaCard($schemaName, $schemaData) {
                                 <div class="mb-4">
                                     <i class="fas fa-sitemap display-1 text-muted"></i>
                                 </div>
-                                <h4 class="text-muted">Nenhum esquema definido</h4>
-                                <p class="text-muted mb-4">Esquemas definem a estrutura dos seus dados. Comece criando seu primeiro esquema!</p>
+                                <h4 class="text-muted"><?php echo t('no_schemas_defined'); ?></h4>
+                                <p class="text-muted mb-4"><?php echo t('schemas_help'); ?></p>
                                 <button type="button" class="btn btn-primary btn-lg" onclick="showSchemaModal()">
                                     <i class="fas fa-plus me-2"></i>
                                     Criar Primeiro Esquema

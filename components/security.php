@@ -11,19 +11,19 @@ $securitySchemes = $openApiData['components']['securitySchemes'] ?? [];
                 <div>
                     <h5 class="card-title mb-1">
                         <i class="fas fa-shield-alt me-2"></i>
-                        <?php echo t('security'); ?> - Configurações de Segurança
+                        <?php echo t('security'); ?> - <?php echo t('security_config'); ?>
                     </h5>
-                    <p class="mb-0">Configure os esquemas de autenticação e autorização da API</p>
+                    <p class="mb-0"><?php echo t('security_description'); ?></p>
                 </div>
                 <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addSecuritySchemeModal">
                     <i class="fas fa-plus me-2"></i>
-                    Adicionar Esquema
+                    <?php echo t('add_scheme'); ?>
                 </button>
             </div>
             <div class="card-body">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    Configure os esquemas de autenticação que sua API utiliza. Defina como os usuários devem se autenticar para acessar os endpoints protegidos.
+                    <?php echo t('security_info'); ?>
                 </div>
                 
                 <form method="POST" id="security-form" onsubmit="return serializeSecurityBeforeSubmit(this);">
@@ -34,14 +34,14 @@ $securitySchemes = $openApiData['components']['securitySchemes'] ?? [];
                     <div class="mb-4">
                         <h6 class="mb-3">
                             <i class="fas fa-key me-2"></i>
-                            Esquemas de Autenticação
+                            <?php echo t('auth_schemes'); ?>
                         </h6>
                         
                         <div id="security-schemes-container">
                             <?php if (empty($securitySchemes)): ?>
                                 <div class="text-center py-4" id="empty-schemes-state">
                                     <i class="fas fa-shield-alt display-4 text-muted"></i>
-                                    <p class="text-muted mt-2">Nenhum esquema de segurança definido. Comece adicionando um esquema de autenticação!</p>
+                                    <p class="text-muted mt-2"><?php echo t('no_schemes_defined'); ?></p>
                                 </div>
                             <?php else: ?>
                                 <?php foreach ($securitySchemes as $schemeName => $schemeData): ?>
@@ -59,12 +59,12 @@ $securitySchemes = $openApiData['components']['securitySchemes'] ?? [];
                                 Segurança Global da API
                             </h6>
                             <div class="alert alert-secondary">
-                                <small>Configure quais esquemas são obrigatórios para toda a API. Endpoints individuais podem sobrescrever essas configurações.</small>
+                                <small><?php echo t('required_schemes_help'); ?></small>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="form-label">Esquemas Obrigatórios</label>
+                                    <label class="form-label"><?php echo t('required_schemes'); ?></label>
                                     <div class="security-requirements">
                                         <?php foreach ($securitySchemes as $schemeName => $schemeData): ?>
                                             <div class="form-check">

@@ -12,7 +12,7 @@ $servers = $openApiData['servers'] ?? [];
                         <i class="fas fa-server me-2"></i>
                         <?php echo t('servers'); ?> - Configuração dos Servidores
                     </h5>
-                    <p class="mb-0">Defina os servidores onde sua API estará disponível</p>
+                    <p class="mb-0"><?php echo t('servers_description'); ?></p>
                 </div>
                 <button type="button" class="btn btn-light btn-sm" onclick="addServer()">
                     <i class="fas fa-plus me-2"></i>
