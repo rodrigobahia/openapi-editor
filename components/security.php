@@ -7,23 +7,26 @@ $securitySchemes = $openApiData['components']['securitySchemes'] ?? [];
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-shield-alt me-2"></i>
-                    <?php echo t('security'); ?> - Configurações de Segurança
-                </h5>
-                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addSecuritySchemeModal">
-                    <i class="fas fa-plus"></i>
-                    Adicionar Esquema
+            <div class="card-header component-header-gradient d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <?php echo t('security'); ?> - <?php echo t('security_config'); ?>
+                    </h5>
+                    <p class="mb-0"><?php echo t('security_description'); ?></p>
+                </div>
+                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addSecuritySchemeModal">
+                    <i class="fas fa-plus me-2"></i>
+                    <?php echo t('add_scheme'); ?>
                 </button>
             </div>
             <div class="card-body">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    Configure os esquemas de autenticação que sua API utiliza. Defina como os usuários devem se autenticar para acessar os endpoints protegidos.
+                    <?php echo t('security_info'); ?>
                 </div>
                 
-                <form method="POST" id="security-form">
+                <form method="POST" id="security-form" onsubmit="return serializeSecurityBeforeSubmit(this);">
                     <input type="hidden" name="save_section" value="1">
                     <input type="hidden" name="section" value="security">
                     
@@ -31,14 +34,14 @@ $securitySchemes = $openApiData['components']['securitySchemes'] ?? [];
                     <div class="mb-4">
                         <h6 class="mb-3">
                             <i class="fas fa-key me-2"></i>
-                            Esquemas de Autenticação
+                            <?php echo t('auth_schemes'); ?>
                         </h6>
                         
                         <div id="security-schemes-container">
                             <?php if (empty($securitySchemes)): ?>
                                 <div class="text-center py-4" id="empty-schemes-state">
                                     <i class="fas fa-shield-alt display-4 text-muted"></i>
-                                    <p class="text-muted mt-2">Nenhum esquema de segurança definido. Comece adicionando um esquema de autenticação!</p>
+                                    <p class="text-muted mt-2"><?php echo t('no_schemes_defined'); ?></p>
                                 </div>
                             <?php else: ?>
                                 <?php foreach ($securitySchemes as $schemeName => $schemeData): ?>
@@ -56,12 +59,12 @@ $securitySchemes = $openApiData['components']['securitySchemes'] ?? [];
                                 Segurança Global da API
                             </h6>
                             <div class="alert alert-secondary">
-                                <small>Configure quais esquemas são obrigatórios para toda a API. Endpoints individuais podem sobrescrever essas configurações.</small>
+                                <small><?php echo t('required_schemes_help'); ?></small>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="form-label">Esquemas Obrigatórios</label>
+                                    <label class="form-label"><?php echo t('required_schemes'); ?></label>
                                     <div class="security-requirements">
                                         <?php foreach ($securitySchemes as $schemeName => $schemeData): ?>
                                             <div class="form-check">
@@ -90,8 +93,8 @@ $securitySchemes = $openApiData['components']['securitySchemes'] ?? [];
                     <?php endif; ?>
                     
                     <div class="d-flex justify-content-end mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>
+                        <button type="submit" class="btn btn-component-save">
+                            <i class="fas fa-check me-2"></i>
                             Salvar Configurações de Segurança
                         </button>
                     </div>
@@ -193,14 +196,22 @@ function isGlobalSecurityEnabled($security, $schemeName) {
 
 <!-- Modal para Adicionar/Editar Esquema de Segurança -->
 <div class="modal fade" id="addSecuritySchemeModal" tabindex="-1" aria-labelledby="addSecuritySchemeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addSecuritySchemeModalLabel">
-                    <i class="fas fa-plus me-2"></i>
-                    Adicionar Esquema de Segurança
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-fullscreen-xl-down modal-xl">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+                    <div class="bg-primary w-100 h-100 gradient-bg-purple"></div>
+                </div>
+                <div class="d-flex align-items-center position-relative z-index-2 w-100">
+                    <div class="flex-grow-1">
+                        <h5 class="modal-title mb-1 fw-bold" id="addSecuritySchemeModalLabel">
+                            <i class="fas fa-plus me-2"></i>
+                            Configurar Esquema de Segurança
+                        </h5>
+                        <small class="opacity-75">Defina os métodos de autenticação da sua API</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
             </div>
             <div class="modal-body">
                 <form id="security-scheme-form">
@@ -235,10 +246,13 @@ function isGlobalSecurityEnabled($security, $schemeName) {
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="saveSecurityScheme()">
-                    <i class="fas fa-save me-1"></i>
+            <div class="modal-footer border-0 bg-light px-4 py-3 d-flex justify-content-end gap-3">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-save" onclick="saveSecurityScheme()">
+                    <i class="fas fa-check me-2"></i>
                     Salvar Esquema
                 </button>
             </div>
@@ -247,6 +261,60 @@ function isGlobalSecurityEnabled($security, $schemeName) {
 </div>
 
 <script>
+function serializeSecurityBeforeSubmit(form) {
+    // Serializa todos os esquemas de segurança presentes no DOM
+    const schemeItems = document.querySelectorAll('.security-scheme-item');
+    const schemes = {};
+    schemeItems.forEach(item => {
+        const name = item.getAttribute('data-scheme-name');
+        if (!name) return;
+        // Buscar detalhes do esquema
+        const details = {};
+        // Tipo
+        const badge = item.querySelector('.badge');
+        if (badge) {
+            details.type = badge.textContent.trim().toLowerCase();
+        }
+        // Descrição
+        const descEl = item.querySelector('p.text-muted');
+        if (descEl) {
+            details.description = descEl.textContent.trim();
+        }
+        // Detalhes específicos
+        const detailsEl = item.querySelector('.scheme-details');
+        if (detailsEl) {
+            // Parse simples: busca por labels e valores
+            const text = detailsEl.textContent;
+            if (details.type === 'apikey') {
+                const nomeMatch = text.match(/Nome:\s*(\S+)/);
+                const inMatch = text.match(/Localização:\s*(\S+)/);
+                if (nomeMatch) details.name = nomeMatch[1];
+                if (inMatch) details.in = inMatch[1].toLowerCase();
+            } else if (details.type === 'http') {
+                const esquemaMatch = text.match(/Esquema:\s*(\S+)/);
+                if (esquemaMatch) details.scheme = esquemaMatch[1].toLowerCase();
+                const formatoMatch = text.match(/Formato:\s*(\S+)/);
+                if (formatoMatch) details.bearerFormat = formatoMatch[1];
+            } else if (details.type === 'oauth2') {
+                // Fluxos não são extraídos do preview, mas podem ser implementados se necessário
+            } else if (details.type === 'openidconnect') {
+                const urlMatch = text.match(/URL:\s*(\S+)/);
+                if (urlMatch) details.openIdConnectUrl = urlMatch[1];
+            }
+        }
+        schemes[name] = details;
+    });
+    // Adiciona campo hidden
+    let hiddenInput = form.querySelector('input[name="security_schemes"]');
+    if (!hiddenInput) {
+        hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'security_schemes';
+        form.appendChild(hiddenInput);
+    }
+    hiddenInput.value = JSON.stringify(schemes);
+    return true;
+}
 let currentScheme = null;
 
 function updateSchemeFields() {
@@ -288,7 +356,7 @@ function updateSchemeFields() {
                             <option value="digest">Digest Auth</option>
                         </select>
                     </div>
-                    <div class="col-md-6" id="bearer-format-container" style="display: none;">
+                    <div class="col-md-6 bearer-format-container" id="bearer-format-container">
                         <label class="form-label">Formato do Bearer</label>
                         <input type="text" class="form-control" id="bearer-format"
                                placeholder="JWT, opaque">
@@ -370,9 +438,9 @@ function updateHttpFields() {
     const bearerContainer = document.getElementById('bearer-format-container');
     
     if (scheme === 'bearer') {
-        bearerContainer.style.display = 'block';
+        bearerContainer.classList.add('show');
     } else {
-        bearerContainer.style.display = 'none';
+        bearerContainer.classList.remove('show');
     }
 }
 
@@ -669,7 +737,7 @@ function escapeHtml(text) {
 
 function showSuccessMessage(message) {
     const toastHtml = `
-        <div class="toast align-items-center text-white bg-success border-0 position-fixed" style="top: 20px; right: 20px; z-index: 9999;" role="alert">
+        <div class="toast align-items-center text-white bg-success border-0 toast-notification" role="alert">
             <div class="d-flex">
                 <div class="toast-body">
                     <i class="fas fa-check me-2"></i>${message}

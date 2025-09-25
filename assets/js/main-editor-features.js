@@ -1,9 +1,161 @@
+// Função global para serializar dados de qualquer seção antes do submit
+function serializeDataBeforeSubmit(form) {
+    const section = form.querySelector('input[name="section"]')?.value;
+    
+    try {
+        switch (section) {
+            case 'header':
+                return serializeHeaderData(form);
+            case 'tags':
+                return serializeTagsData(form);
+            case 'main':
+                return serializePathsData(form);
+            case 'servers':
+                return serializeServersData(form);
+            case 'security':
+                return serializeSecurityData(form);
+            default:
+                return true;
+        }
+    } catch (e) {
+        alert('Erro ao preparar dados para salvamento: ' + e.message);
+        return false;
+    }
+}
+
+// Função específica para serializar endpoints (antiga função)
+function serializePathsBeforeSubmit() {
+    try {
+        let paths;
+        if (window.mainEditor && typeof window.mainEditor.getCurrentPaths === 'function') {
+            paths = window.mainEditor.getCurrentPaths();
+        } else if (window.openApiSpec && window.openApiSpec.paths) {
+            paths = window.openApiSpec.paths;
+        } else {
+            // Tentar buscar do DOM como fallback
+            paths = {};
+            const endpointElements = document.querySelectorAll('.endpoint-group');
+            endpointElements.forEach(elem => {
+                const path = elem.getAttribute('data-path');
+                const method = elem.getAttribute('data-method');
+                if (path && method) {
+                    if (!paths[path]) paths[path] = {};
+                    paths[path][method] = {
+                        summary: elem.querySelector('.text-muted.small').textContent || 'Endpoint criado',
+                        responses: { "200": { "description": "Successful response" } }
+                    };
+                }
+            });
+        }
+        
+        const pathsField = document.getElementById('paths-json');
+        if (!pathsField) {
+            alert('Erro interno: campo de dados não encontrado.');
+            return false;
+        }
+        
+        const pathsJson = JSON.stringify(paths);
+        pathsField.value = pathsJson;
+        return true;
+    } catch (e) {
+        alert('Erro ao salvar endpoints: ' + e.message);
+        return false;
+    }
+}
+
+// Funções de serialização por seção
+function serializeHeaderData(form) {
+    // Os dados do header já são enviados pelos campos do formulário
+    // Não precisa de serialização especial
+    return true;
+}
+
+function serializeTagsData(form) {
+    const tagItems = document.querySelectorAll('.tag-item');
+    const tags = [];
+    
+    tagItems.forEach((item, index) => {
+        // Buscar inputs de forma mais específica
+        const nameInput = item.querySelector('input[name*="[name]"]') || item.querySelector('input[type="text"]');
+        const descInput = item.querySelector('input[name*="[description]"]');
+        const urlInput = item.querySelector('input[name*="[externalDocs][url]"]') || item.querySelector('input[type="url"]');
+        const docDescInput = item.querySelector('input[name*="[externalDocs][description]"]:last-of-type');
+        
+        const name = nameInput?.value?.trim();
+        if (name) {
+            const tag = { name };
+            
+            const description = descInput?.value?.trim();
+            if (description) {
+                tag.description = description;
+            }
+            
+            const url = urlInput?.value?.trim();
+            const docDesc = docDescInput?.value?.trim();
+            if (url || docDesc) {
+                tag.externalDocs = {};
+                if (url) tag.externalDocs.url = url;
+                if (docDesc) tag.externalDocs.description = docDesc;
+            }
+            
+            tags.push(tag);
+        }
+    });
+    
+    let tagsField = form.querySelector('input[name="tags_data"]');
+    if (!tagsField) {
+        tagsField = document.createElement('input');
+        tagsField.type = 'hidden';
+        tagsField.name = 'tags_data';
+        form.appendChild(tagsField);
+    }
+    
+    const tagsJson = JSON.stringify(tags);
+    tagsField.value = tagsJson;
+    
+    return true;
+}
+
+function serializePathsData(form) {
+    return serializePathsBeforeSubmit();
+}
+
+function serializeServersData(form) {
+    // Coletar servidores da interface e serializar
+    const servers = [];
+    document.querySelectorAll('.server-item').forEach(item => {
+        const url = item.querySelector('[data-field="url"]')?.textContent || item.querySelector('[data-field="url"]')?.value;
+        const description = item.querySelector('[data-field="description"]')?.textContent || item.querySelector('[data-field="description"]')?.value;
+        if (url) {
+            servers.push({ url, description: description || '' });
+        }
+    });
+    
+    let serversField = form.querySelector('input[name="servers_data"]');
+    if (!serversField) {
+        serversField = document.createElement('input');
+        serversField.type = 'hidden';
+        serversField.name = 'servers_data';
+        form.appendChild(serversField);
+    }
+    serversField.value = JSON.stringify(servers);
+    return true;
+}
+
+function serializeSecurityData(form) {
+    // Implementar quando necessário
+    return true;
+}
 /**
  * Main Editor Implementation - Advanced Features
  * OpenAPI Editor - Complete Main Tab Functionality
  */
 
 class MainEditorFeatures {
+    // ...existing code...
+    getCurrentPaths() {
+        return this.currentSpec.paths || {};
+    }
     constructor() {
         this.currentSpec = {};
         this.selectedPath = null;
@@ -229,7 +381,6 @@ class MainEditorFeatures {
                 try {
                     this.currentSpec = JSON.parse(editorContent);
                 } catch (e) {
-                    console.warn('Could not parse editor content as JSON');
                     this.currentSpec = this.getDefaultSpec();
                 }
             } else {
@@ -505,7 +656,6 @@ class MainEditorFeatures {
         };
 
         this.showNotification('External documentation saved successfully!', 'success');
-        console.log('External docs saved:', this.currentSpec.externalDocs);
     }
 
     /**
@@ -565,8 +715,6 @@ class MainEditorFeatures {
                 this.handleTabSwitch(e.target);
             }
         });
-
-        console.log('📎 Event handlers bound successfully');
     }
 
     /**
@@ -609,11 +757,9 @@ class MainEditorFeatures {
                 detail: this.currentSpec
             }));
             
-            console.log('💾 Specification saved:', this.currentSpec);
             return this.currentSpec;
             
         } catch (error) {
-            console.error('Save failed:', error);
             if (showNotification) {
                 this.showNotification('Failed to save specification', 'error');
             }
@@ -629,7 +775,7 @@ class MainEditorFeatures {
             this.saveCurrentSpec(false); // Silent save
             this.showNotification('Changes auto-saved', 'success', 2000);
         } catch (error) {
-            console.warn('Auto-save failed:', error);
+            // Auto-save failed silently
         }
     }
 
@@ -659,7 +805,6 @@ class MainEditorFeatures {
      */
     handleTabSwitch(tabElement) {
         const target = tabElement.getAttribute('data-bs-target') || tabElement.getAttribute('href');
-        console.log(`Switching to tab: ${target}`);
         
         // Save current state before switching
         this.saveCurrentState();

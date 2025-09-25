@@ -6,14 +6,17 @@ $paths = $openApiData['paths'] ?? new stdClass();
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-code me-2"></i>
-                    <?php echo t('main'); ?> - Endpoints da API
-                </h5>
+            <div class="card-header component-header-gradient d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-code me-2"></i>
+                        <?php echo t('main'); ?> - Endpoints da API
+                    </h5>
+                    <p class="mb-0">Defina as rotas, operações e endpoints da sua API</p>
+                </div>
                 <div class="d-flex gap-2">
                     <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-filter me-1"></i>
                             Filtrar por Tag
                         </button>
@@ -25,8 +28,8 @@ $paths = $openApiData['paths'] ?? new stdClass();
                             <!-- Tags serão carregadas dinamicamente -->
                         </ul>
                     </div>
-                    <button type="button" class="btn btn-success btn-sm" onclick="addEndpoint()" data-bs-toggle="modal" data-bs-target="#addEndpointModal">
-                        <i class="fas fa-plus"></i>
+                    <button type="button" class="btn btn-light btn-sm" onclick="addEndpoint()" data-bs-toggle="modal" data-bs-target="#addEndpointModal">
+                        <i class="fas fa-plus me-1"></i>
                         Adicionar Endpoint
                     </button>
                 </div>
@@ -37,9 +40,10 @@ $paths = $openApiData['paths'] ?? new stdClass();
                     Esta é a seção principal onde você define todos os endpoints da sua API. Cada endpoint representa uma operação que sua API pode realizar.
                 </div>
                 
-                <form method="POST" id="paths-form">
+                <form method="POST" id="paths-form" onsubmit="return serializeDataBeforeSubmit(this);">
                     <input type="hidden" name="save_section" value="1">
                     <input type="hidden" name="section" value="main">
+                    <input type="hidden" name="paths" id="paths-json">
                     
                     <div id="endpoints-container">
                         <?php if (empty((array)$paths)): ?>
@@ -57,7 +61,7 @@ $paths = $openApiData['paths'] ?? new stdClass();
                     </div>
                     
                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-component-save">
                             <i class="fas fa-save me-1"></i>
                             Salvar Endpoints
                         </button>
@@ -68,36 +72,54 @@ $paths = $openApiData['paths'] ?? new stdClass();
     </div>
 </div>
 
+
+
+
+
 <!-- Modal para Adicionar/Editar Endpoint -->
 <div class="modal fade" id="addEndpointModal" tabindex="-1" aria-labelledby="addEndpointModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addEndpointModalLabel">
-                    <i class="fas fa-plus me-2"></i>
-                    Adicionar Novo Endpoint
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-fullscreen-xl-down modal-xl">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+                    <div class="bg-primary w-100 h-100 gradient-bg-purple"></div>
+                </div>
+                <div class="d-flex align-items-center position-relative z-index-2 w-100">
+                    <div class="endpoint-preview-header me-4">
+                        <div class="d-flex align-items-center">
+                            <span class="method-badge badge fs-6 px-3 py-2 me-3" id="modal-method-preview">GET</span>
+                            <code class="endpoint-path-preview bg-dark bg-opacity-25 px-3 py-2 rounded text-white" id="modal-path-preview">/endpoint</code>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="modal-title mb-1 fw-bold" id="addEndpointModalLabel">
+                            <i class="fas fa-plus me-2"></i>
+                            Configurar Endpoint
+                        </h5>
+                        <small class="opacity-75">Defina os detalhes da sua operação API</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white position-relative z-index-2" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="endpoint-form">
                     <div class="row">
                         <div class="col-md-4">
                             <label for="endpoint-method" class="form-label">Método HTTP</label>
-                            <select class="form-select" id="endpoint-method" required>
+                            <select class="form-select" id="endpoint-method" required onchange="updateMethodPreview()">
                                 <option value="">Selecione o método</option>
-                                <option value="get" data-color="primary">GET</option>
-                                <option value="post" data-color="success">POST</option>
-                                <option value="put" data-color="warning">PUT</option>
-                                <option value="patch" data-color="info">PATCH</option>
-                                <option value="delete" data-color="danger">DELETE</option>
-                                <option value="head" data-color="secondary">HEAD</option>
-                                <option value="options" data-color="dark">OPTIONS</option>
+                                <option value="get" data-color="primary" data-bg="bg-primary">GET</option>
+                                <option value="post" data-color="success" data-bg="bg-success">POST</option>
+                                <option value="put" data-color="warning" data-bg="bg-warning">PUT</option>
+                                <option value="patch" data-color="info" data-bg="bg-info">PATCH</option>
+                                <option value="delete" data-color="danger" data-bg="bg-danger">DELETE</option>
+                                <option value="head" data-color="secondary" data-bg="bg-secondary">HEAD</option>
+                                <option value="options" data-color="dark" data-bg="bg-dark">OPTIONS</option>
                             </select>
                         </div>
                         <div class="col-md-8">
                             <label for="endpoint-path" class="form-label">Caminho do Endpoint</label>
-                            <input type="text" class="form-control" id="endpoint-path" placeholder="/users/{id}" required>
+                            <input type="text" class="form-control" id="endpoint-path" placeholder="/users/{id}" required oninput="updatePathPreview()">
                             <div class="form-text">Use {parametro} para parâmetros de caminho</div>
                         </div>
                     </div>
@@ -109,8 +131,21 @@ $paths = $openApiData['paths'] ?? new stdClass();
                         </div>
                         <div class="col-md-6">
                             <label for="endpoint-tags" class="form-label">Tags</label>
-                            <input type="text" class="form-control" id="endpoint-tags" placeholder="users, authentication">
-                            <div class="form-text">Separar por vírgulas</div>
+                            <select multiple class="form-select multi-select-tags" id="endpoint-tags" onchange="handleTagSelection()">
+                                <!-- As opções serão preenchidas dinamicamente via JavaScript -->
+                            </select>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Segure Ctrl/Cmd para selecionar múltiplas tags
+                            </div>
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    Não encontra sua tag? 
+                                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" onclick="addNewTag()">
+                                        Adicionar nova tag
+                                    </button>
+                                </small>
+                            </div>
                         </div>
                     </div>
                     
@@ -121,25 +156,25 @@ $paths = $openApiData['paths'] ?? new stdClass();
                     
                     <!-- Abas para diferentes seções -->
                     <div class="mt-4">
-                        <ul class="nav nav-tabs" id="endpointTabs" role="tablist">
+                        <ul class="nav nav-pills nav-justified bg-light rounded p-2" id="endpointTabs" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="parameters-tab" data-bs-toggle="tab" data-bs-target="#parameters" type="button" role="tab">
-                                    <i class="fas fa-cog me-1"></i>Parâmetros
+                                <button class="nav-link active rounded-pill px-4 py-2" id="parameters-tab" data-bs-toggle="tab" data-bs-target="#parameters" type="button" role="tab">
+                                    <i class="fas fa-sliders-h me-2"></i>Parâmetros
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="request-tab" data-bs-toggle="tab" data-bs-target="#request" type="button" role="tab">
-                                    <i class="fas fa-upload me-1"></i>Request Body
+                                <button class="nav-link rounded-pill px-4 py-2" id="request-tab" data-bs-toggle="tab" data-bs-target="#request" type="button" role="tab">
+                                    <i class="fas fa-paper-plane me-2"></i>Request Body
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="responses-tab" data-bs-toggle="tab" data-bs-target="#responses" type="button" role="tab">
-                                    <i class="fas fa-download me-1"></i>Responses
+                                <button class="nav-link rounded-pill px-4 py-2" id="responses-tab" data-bs-toggle="tab" data-bs-target="#responses" type="button" role="tab">
+                                    <i class="fas fa-reply me-2"></i>Responses
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="headers-tab" data-bs-toggle="tab" data-bs-target="#headers" type="button" role="tab">
-                                    <i class="fas fa-list me-1"></i>Headers
+                                <button class="nav-link rounded-pill px-4 py-2" id="headers-tab" data-bs-toggle="tab" data-bs-target="#headers" type="button" role="tab">
+                                    <i class="fas fa-globe me-2"></i>Headers
                                 </button>
                             </li>
                         </ul>
@@ -191,40 +226,43 @@ $paths = $openApiData['paths'] ?? new stdClass();
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Tab Responses -->
-                            <div class="tab-pane fade" id="responses" role="tabpanel">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6 class="mb-0">Respostas da API</h6>
-                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addResponse()">
-                                        <i class="fas fa-plus"></i> Adicionar Resposta
-                                    </button>
-                                </div>
-                                <div id="responses-container">
-                                    <div class="text-muted text-center py-3">Nenhuma resposta definida</div>
-                                </div>
-                            </div>
-                            
-                            <!-- Tab Headers -->
-                            <div class="tab-pane fade" id="headers" role="tabpanel">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6 class="mb-0">Headers Personalizados</h6>
-                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addHeader()">
-                                        <i class="fas fa-plus"></i> Adicionar Header
-                                    </button>
-                                </div>
-                                <div id="headers-container">
-                                    <div class="text-muted text-center py-3">Nenhum header personalizado</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            
+            <!-- Tab Responses -->
+            <div class="tab-pane fade" id="responses" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">Respostas da API</h6>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addResponse()">
+                        <i class="fas fa-plus"></i> Adicionar Resposta
+                    </button>
+                </div>
+                <div id="responses-container">
+                    <div class="text-muted text-center py-3">Nenhuma resposta definida</div>
+                </div>
+            </div>
+            
+            <!-- Tab Headers -->
+            <div class="tab-pane fade" id="headers" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">Headers Personalizados</h6>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addHeader()">
+                        <i class="fas fa-plus"></i> Adicionar Header
+                    </button>
+                </div>
+                <div id="headers-container">
+                    <div class="text-muted text-center py-3">Nenhum header personalizado</div>
+                </div>
+            </div>
+        </div>
+    </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="saveEndpoint()">
-                    <i class="fas fa-save me-1"></i>
+            <div class="modal-footer border-0 bg-light px-4 py-3 d-flex justify-content-end gap-3">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-save" onclick="saveEndpoint()">
+                    <i class="fas fa-check me-2"></i>
                     Salvar Endpoint
                 </button>
             </div>
@@ -443,6 +481,82 @@ let parameterCounter = 0;
 let responseCounter = 0;
 let headerCounter = 0;
 
+
+
+// Função para atualizar preview do método no cabeçalho
+function updateMethodPreview() {
+    const methodSelect = document.getElementById('endpoint-method');
+    const methodBadge = document.getElementById('modal-method-preview');
+    
+    if (methodBadge && methodSelect.value) {
+        const selectedOption = methodSelect.selectedOptions[0];
+        const color = selectedOption.dataset.color;
+        
+        methodBadge.className = `method-badge badge bg-${color} fs-6 px-3 py-2 me-3`;
+        methodBadge.textContent = methodSelect.value.toUpperCase();
+    }
+}
+
+// Função para atualizar preview do path no cabeçalho
+function updatePathPreview() {
+    const pathInput = document.getElementById('endpoint-path');
+    const pathPreview = document.getElementById('modal-path-preview');
+    
+    if (pathPreview) {
+        pathPreview.textContent = pathInput.value || '/endpoint';
+    }
+}
+
+// Função para popular o select de tags com tags existentes
+function populateTagsSelect() {
+    const tagSelect = document.getElementById('endpoint-tags');
+    tagSelect.innerHTML = ''; // Limpar opções existentes
+    
+    const tagsArray = Array.from(availableTags).sort();
+    
+    tagsArray.forEach(tag => {
+        const option = document.createElement('option');
+        option.value = tag;
+        option.textContent = tag;
+        tagSelect.appendChild(option);
+    });
+    
+    // Se não há tags disponíveis, adicionar uma opção padrão
+    if (tagsArray.length === 0) {
+        const option = document.createElement('option');
+        option.value = 'default';
+        option.textContent = 'default';
+        tagSelect.appendChild(option);
+    }
+}
+
+// Função para lidar com a seleção de tags
+function handleTagSelection() {
+    const tagSelect = document.getElementById('endpoint-tags');
+    const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
+    
+    // Atualizar conjunto de tags disponíveis
+    selectedTags.forEach(tag => availableTags.add(tag));
+}
+
+// Função para adicionar nova tag
+function addNewTag() {
+    const newTag = prompt('Digite o nome da nova tag:');
+    if (newTag && newTag.trim()) {
+        const cleanTag = newTag.trim().toLowerCase().replace(/\s+/g, '-');
+        availableTags.add(cleanTag);
+        populateTagsSelect();
+        
+        // Selecionar a nova tag automaticamente
+        const tagSelect = document.getElementById('endpoint-tags');
+        Array.from(tagSelect.options).forEach(option => {
+            if (option.value === cleanTag) {
+                option.selected = true;
+            }
+        });
+    }
+}
+
 // Disponibilizar dados do OpenAPI globalmente para JavaScript
 const openApiData = <?php echo json_encode($openApiData); ?>;
 let availableTags = new Set();
@@ -464,6 +578,7 @@ function initializeTags() {
     }
     
     updateTagFilterMenu();
+    populateTagsSelect(); // Atualizar o select de tags também
 }
 
 // Atualizar menu de filtro de tags
@@ -549,6 +664,7 @@ function addEndpoint() {
     document.getElementById('addEndpointModalLabel').innerHTML = '<i class="fas fa-plus me-2"></i>Adicionar Novo Endpoint';
     document.getElementById('endpoint-form').reset();
     clearAllContainers();
+    populateTagsSelect(); // Popular select de tags
 }
 
 function editEndpoint(button) {
@@ -563,7 +679,8 @@ function editEndpoint(button) {
     document.getElementById('endpoint-form').reset();
     clearAllContainers();
     
-    // Buscar dados do endpoint do PHP/JSON
+    // Popular tags e buscar dados do endpoint
+    populateTagsSelect();
     loadEndpointData(path, method);
     
     // Abrir modal
@@ -585,7 +702,11 @@ function loadEndpointData(path, method) {
         
         // Preencher tags
         if (operation.tags && Array.isArray(operation.tags)) {
-            document.getElementById('endpoint-tags').value = operation.tags.join(', ');
+            // Selecionar tags no multiselect
+            const tagSelect = document.getElementById('endpoint-tags');
+            Array.from(tagSelect.options).forEach(option => {
+                option.selected = operation.tags.includes(option.value);
+            });
         }
         
         // Carregar parâmetros
@@ -633,7 +754,11 @@ function loadEndpointDataFromDOM(endpointGroup) {
     const tagBadges = endpointGroup.querySelectorAll('.badge.bg-secondary');
     if (tagBadges.length > 0) {
         const tags = Array.from(tagBadges).map(badge => badge.textContent.trim()).join(', ');
-        document.getElementById('endpoint-tags').value = tags;
+        // Limpar seleção de tags
+        const tagSelect = document.getElementById('endpoint-tags');
+        Array.from(tagSelect.options).forEach(option => {
+            option.selected = false;
+        });
     }
 }
 
@@ -1042,30 +1167,131 @@ function clearAllContainers() {
     document.getElementById('request-example').value = '';
 }
 
+function serializeDataBeforeSubmit(form) {
+    try {
+        const endpoints = document.querySelectorAll('.endpoint-group');
+        const pathsData = {};
+        endpoints.forEach(endpoint => {
+            const path = endpoint.getAttribute('data-path');
+            const method = endpoint.getAttribute('data-method');
+            if (path && method) {
+                if (!pathsData[path]) pathsData[path] = {};
+                
+                // Extrair summary (primeiro div com text-muted small)
+                const summaryEl = endpoint.querySelector('.text-muted.small');
+                const summary = summaryEl ? summaryEl.textContent.trim() : '';
+                
+                // Extrair description (segundo div com text-muted small mt-1, se existir)
+                const descriptionEl = endpoint.querySelector('.text-muted.small.mt-1');
+                const description = descriptionEl ? descriptionEl.textContent.trim() : '';
+                
+                // Extrair tags (badges bg-secondary)
+                const tagBadges = endpoint.querySelectorAll('.badge.bg-secondary');
+                const tags = Array.from(tagBadges).map(badge => badge.textContent.trim());
+                
+                // Extrair parâmetros do atributo data-parameters
+                let params = [];
+                try {
+                    const parametersAttr = endpoint.getAttribute('data-parameters');
+                    if (parametersAttr) {
+                        params = JSON.parse(parametersAttr);
+                    }
+                } catch (e) {
+                    console.warn('Erro ao parsear parâmetros do endpoint:', e);
+                    params = [];
+                }
+                
+                pathsData[path][method] = {
+                    summary: summary,
+                    description: description,
+                    tags: tags,
+                    parameters: params,
+                    responses: {
+                        "200": { "description": "Successful response" }
+                    }
+                };
+            }
+        });
+        // Adicionar campo hidden com dados serializados
+        let hiddenInput = form.querySelector('input[name="paths"]');
+        if (!hiddenInput) {
+            hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'paths';
+            form.appendChild(hiddenInput);
+        }
+        hiddenInput.value = JSON.stringify(pathsData);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
 function saveEndpoint() {
     const form = document.getElementById('endpoint-form');
     const method = document.getElementById('endpoint-method').value;
     const path = document.getElementById('endpoint-path').value;
     const summary = document.getElementById('endpoint-summary').value;
     const description = document.getElementById('endpoint-description').value;
-    const tags = document.getElementById('endpoint-tags').value;
+    // Obter tags selecionadas do multiselect
+    const tagSelect = document.getElementById('endpoint-tags');
+    const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
+    const tags = selectedTags;
     
     if (!method || !path || !summary) {
         alert('Por favor, preencha os campos obrigatórios: Método, Caminho e Resumo.');
         return;
     }
     
+    // Coletar parâmetros do modal
+    const parameters = [];
+    const paramElements = document.querySelectorAll('#addEndpointModal .parameter-item');
+    paramElements.forEach(param => {
+        const nameInput = param.querySelector('input[name="param_name[]"]');
+        const inSelect = param.querySelector('select[name="param_in[]"]');
+        const requiredCheck = param.querySelector('input[name="param_required[]"]');
+        const descInput = param.querySelector('input[name="param_description[]"], textarea[name="param_description[]"]');
+        const typeSelect = param.querySelector('select[name="param_type[]"]');
+        
+        if (nameInput && nameInput.value.trim()) {
+            const paramData = {
+                name: nameInput.value.trim(),
+                in: inSelect ? inSelect.value : 'query',
+                required: requiredCheck ? requiredCheck.checked : false,
+                description: descInput ? descInput.value.trim() : ''
+            };
+            
+            if (typeSelect && typeSelect.value) {
+                paramData.schema = { type: typeSelect.value };
+            }
+            
+            parameters.push(paramData);
+        }
+    });
+    
+    // Atualizar estrutura de dados OpenAPI
+    updateOpenAPIData(method, path, summary, description, tags, parameters);
+    
     // Criar elemento do endpoint
-    const endpointHtml = createEndpointHtml(method, path, summary, description, tags);
+    const endpointHtml = createEndpointHtml(method, path, summary, description, tags, parameters);
     
-    // Adicionar ao container
-    const container = document.getElementById('endpoints-container');
-    const emptyState = container.querySelector('#empty-state');
-    if (emptyState) {
-        emptyState.remove();
+    // Verificar se está editando um endpoint existente
+    if (currentEndpoint && currentEndpoint.path && currentEndpoint.method) {
+        // Edição: substituir o endpoint existente
+        const existingEndpoint = document.querySelector(`[data-path="${currentEndpoint.path}"][data-method="${currentEndpoint.method}"]`);
+        if (existingEndpoint) {
+            existingEndpoint.outerHTML = endpointHtml;
+        }
+    } else {
+        // Novo endpoint: adicionar ao container
+        const container = document.getElementById('endpoints-container');
+        const emptyState = container.querySelector('#empty-state');
+        if (emptyState) {
+            emptyState.remove();
+        }
+        
+        container.insertAdjacentHTML('beforeend', endpointHtml);
     }
-    
-    container.insertAdjacentHTML('beforeend', endpointHtml);
     
     // Atualizar tags disponíveis se novas tags foram adicionadas
     if (tags) {
@@ -1081,9 +1307,69 @@ function saveEndpoint() {
     // Mostrar mensagem de sucesso
     const action = currentEndpoint ? 'atualizado' : 'adicionado';
     showSuccessMessage(`Endpoint ${action} com sucesso!`);
+    
+    // Limpar currentEndpoint após salvar
+    currentEndpoint = null;
 }
 
-function createEndpointHtml(method, path, summary, description, tags) {
+// Função para atualizar a estrutura de dados OpenAPI
+function updateOpenAPIData(method, path, summary, description, tags, parameters = []) {
+    // Inicializar estrutura global se não existir
+    if (!window.openApiSpec) {
+        window.openApiSpec = {
+            openapi: "3.0.3",
+            info: { title: "API", version: "1.0.0" },
+            paths: {}
+        };
+    }
+    
+    if (!window.openApiSpec.paths) {
+        window.openApiSpec.paths = {};
+    }
+    
+    // Adicionar ou atualizar o path
+    if (!window.openApiSpec.paths[path]) {
+        window.openApiSpec.paths[path] = {};
+    }
+    
+    // Criar objeto da operação
+    const operation = {
+        summary: summary,
+        operationId: path.replace(/[^a-zA-Z0-9]/g, '_') + '_' + method
+    };
+    
+    if (description) {
+        operation.description = description;
+    }
+    
+    if (tags) {
+        const tagsArray = tags.split(',').map(t => t.trim()).filter(t => t);
+        if (tagsArray.length > 0) {
+            operation.tags = tagsArray;
+        }
+    }
+    
+    if (parameters && parameters.length > 0) {
+        operation.parameters = parameters;
+    }
+    
+    // Adicionar responses padrão
+    operation.responses = {
+        "200": {
+            "description": "Successful response"
+        }
+    };
+    
+    // Salvar a operação no método especificado
+    window.openApiSpec.paths[path][method.toLowerCase()] = operation;
+    
+    // Atualizar mainEditor se existir
+    if (window.mainEditor && window.mainEditor.currentSpec) {
+        window.mainEditor.currentSpec.paths = window.openApiSpec.paths;
+    }
+}
+
+function createEndpointHtml(method, path, summary, description, tags, parameters = []) {
     const methodColor = getMethodColorJS(method);
     const operationId = path + '_' + method;
     const tagsArray = tags ? tags.split(',').map(t => t.trim()).filter(t => t) : [];
@@ -1095,8 +1381,11 @@ function createEndpointHtml(method, path, summary, description, tags) {
             '</div>';
     }
     
+    // Criar dados estruturados dos parâmetros para serialização
+    const parametersData = JSON.stringify(parameters);
+    
     return `
-        <div class="endpoint-group border rounded p-3 mb-4" data-path="${escapeHtml(path)}" data-method="${method}">
+        <div class="endpoint-group border rounded p-3 mb-4" data-path="${escapeHtml(path)}" data-method="${method}" data-parameters='${parametersData}'>
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
                     <h6 class="mb-1">
@@ -1181,7 +1470,7 @@ function showToast(type, message) {
     
     const toastHtml = `
         <div class="toast align-items-center text-white ${colors[type]} border-0 position-fixed" 
-             style="top: 20px; right: 20px; z-index: 9999;" role="alert">
+             class="toast-notification" role="alert">
             <div class="d-flex">
                 <div class="toast-body">
                     <i class="fas ${icons[type]} me-2"></i>${message}
@@ -1206,6 +1495,7 @@ function showToast(type, message) {
 // Inicializar quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
     initializeTags();
+    populateTagsSelect(); // Popular o select de tags
     
     // Observar mudanças no container de endpoints para atualizar tags
     const observer = new MutationObserver(function(mutations) {
@@ -1223,6 +1513,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('endpoints-container');
     if (container) {
         observer.observe(container, { childList: true, subtree: true });
+    }
+    
+    // Limpar currentEndpoint quando modal for fechado
+    const modal = document.getElementById('addEndpointModal');
+    if (modal) {
+        modal.addEventListener('hidden.bs.modal', function () {
+            currentEndpoint = null;
+            document.getElementById('addEndpointModalLabel').innerHTML = '<i class="fas fa-plus me-2"></i>Adicionar Endpoint';
+        });
     }
 });
 </script>

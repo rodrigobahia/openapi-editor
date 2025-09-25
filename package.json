@@ -1,6 +1,6 @@
 {
   "name": "openapi-editor",
-  "version": "1.0.0",
+  "version": "1.0.1-beta",
   "description": "Editor web completo para documentação OpenAPI/Swagger com interface moderna e recursos avançados",
   "main": "index.js",
   "homepage": "https://github.com/rodrigobahia/openapi-editor#readme",
