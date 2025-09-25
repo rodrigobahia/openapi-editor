@@ -28,8 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           } else {
             $template = getBlankOpenAPITemplate($projectName);
             if (saveOpenAPIFile($projectName, $template)) {
-              $message = t('success_created');
-              $messageType = 'success';
+              // Regra padrão: sempre redirecionar para o editor após criar novo projeto
+              header('Location: editor.php?file=' . urlencode($filename));
+              exit;
             }
           }
         }
