@@ -28,8 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           } else {
             $template = getBlankOpenAPITemplate($projectName);
             if (saveOpenAPIFile($projectName, $template)) {
-              $message = t('success_created');
-              $messageType = 'success';
+              // Regra padrão: sempre redirecionar para o editor após criar novo projeto
+              header('Location: editor.php?file=' . urlencode($filename));
+              exit;
             }
           }
         }
@@ -274,27 +275,27 @@ $files = getOpenAPIFiles();
   <section class="home-hero" itemscope itemtype="http://schema.org/WebPageElement">
     <div class="container">
       <div class="hero-content text-center">
-        <h1 class="hero-title" itemprop="headline">OpenAPI Editor</h1>
+        <h1 class="hero-title" itemprop="headline"><?php echo t('hero_title'); ?></h1>
         <p class="hero-subtitle" itemprop="description">
-          Crie, edite e gerencie suas especificações OpenAPI 3.0.3 com uma interface moderna e intuitiva.
+          <?php echo t('hero_subtitle'); ?>
         </p>
         <!-- Rich Snippets for Features -->
         <div class="sr-only" itemscope itemtype="http://schema.org/ItemList">
           <div itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
             <meta itemprop="position" content="1">
-            <span itemprop="name">Create OpenAPI 3.0.3 Specifications</span>
+            <span itemprop="name"><?php echo t('create_openapi_specs'); ?></span>
           </div>
           <div itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
             <meta itemprop="position" content="2">
-            <span itemprop="name">Real-time Swagger UI Preview</span>
+            <span itemprop="name"><?php echo t('realtime_swagger_preview'); ?></span>
           </div>
           <div itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
             <meta itemprop="position" content="3">
-            <span itemprop="name">Visual Schema Designer</span>
+            <span itemprop="name"><?php echo t('visual_schema_designer'); ?></span>
           </div>
           <div itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
             <meta itemprop="position" content="4">
-            <span itemprop="name">Multi-format Export (JSON, YAML)</span>
+            <span itemprop="name"><?php echo t('multiformat_export'); ?></span>
           </div>
         </div>
       </div>
@@ -345,8 +346,8 @@ $files = getOpenAPIFiles();
   <section class="action-cards-section">
     <div class="container">
       <div class="section-title">
-        <h2>Comece Agora</h2>
-        <p>Escolha como deseja começar seu projeto OpenAPI</p>
+        <h2><?php echo t('get_started'); ?></h2>
+        <p><?php echo t('get_started_description'); ?></p>
       </div>
       
       <div class="row justify-content-center">
@@ -359,7 +360,7 @@ $files = getOpenAPIFiles();
             </div>
             <h3 class="action-title"><?php echo t('create_blank_project'); ?></h3>
             <p class="action-description">
-              Comece com um template OpenAPI 3.0.3 limpo e profissional, pronto para personalização.
+              <?php echo t('create_description'); ?>
             </p>
             <form method="POST">
               <input type="hidden" name="action" value="create_project">
@@ -367,8 +368,8 @@ $files = getOpenAPIFiles();
                 <label for="project_name" class="form-label"><?php echo t('project_name_label'); ?></label>
                 <input type="text" class="form-control" id="project_name" name="project_name"
                   pattern="[a-zA-Z0-9_-]+" required
-                  placeholder="minha-api-incrivel">
-                <div class="form-text">Apenas letras, números, _ e -</div>
+                  placeholder="<?php echo t('project_name_placeholder'); ?>">
+                <div class="form-text"><?php echo t('project_name_help'); ?></div>
               </div>
               <button type="submit" class="btn btn-primary w-100">
                 <i class="fas fa-plus me-2"></i>
@@ -388,7 +389,7 @@ $files = getOpenAPIFiles();
             </div>
             <h3 class="action-title"><?php echo t('upload_existing_file'); ?></h3>
             <p class="action-description">
-              Importe um arquivo OpenAPI existente ou especificação de outra ferramenta.
+              <?php echo t('upload_description'); ?>
             </p>
             <form method="POST" enctype="multipart/form-data">
               <input type="hidden" name="action" value="upload_file">
@@ -396,7 +397,7 @@ $files = getOpenAPIFiles();
                 <label for="json_file" class="form-label"><?php echo t('choose_file'); ?></label>
                 <input type="file" class="form-control" id="json_file" name="json_file"
                   accept=".json" required>
-                <div class="form-text">Arquivos .json, .yaml ou .yml aceitos</div>
+                <div class="form-text"><?php echo t('file_help'); ?></div>
               </div>
               <button type="submit" class="btn btn-primary w-100">
                 <i class="fas fa-upload me-2"></i>
@@ -419,9 +420,9 @@ $files = getOpenAPIFiles();
           <div class="section-title">
             <h3>
               <i class="fas fa-folder-open"></i>
-              Projetos Existentes
+              <?php echo t('existing_projects'); ?>
             </h3>
-            <p>Arquivos OpenAPI salvos na pasta do projeto</p>
+            <p><?php echo t('existing_projects_description'); ?></p>
           </div>
         </div>
 
@@ -431,9 +432,9 @@ $files = getOpenAPIFiles();
             <div class="empty-icon">
               <i class="fas fa-folder-open"></i>
             </div>
-            <h3 class="empty-title">Nenhum projeto encontrado</h3>
+            <h3 class="empty-title"><?php echo t('no_projects_found'); ?></h3>
             <p class="empty-description">
-              Você ainda não criou nenhum projeto. Comece criando um novo projeto acima ou importando um arquivo existente.
+              <?php echo t('no_projects_description'); ?>
             </p>
           </div>
         <?php else: ?>
@@ -450,7 +451,7 @@ $files = getOpenAPIFiles();
                       <?php 
                         $filePath = __DIR__ . '/files/' . $file;
                         if (file_exists($filePath)) {
-                          echo 'Modificado em ' . date('d/m/Y H:i', filemtime($filePath));
+                          echo t('modified_at') . ' ' . date('d/m/Y H:i', filemtime($filePath));
                         }
                       ?>
                     </div>
@@ -459,7 +460,7 @@ $files = getOpenAPIFiles();
                 <div class="file-actions">
                   <a href="editor.php?file=<?php echo urlencode($file); ?>" class="btn btn-primary">
                     <i class="fas fa-edit me-1"></i>
-                    Editar
+                    <?php echo t('edit'); ?>
                   </a>
                   <?php if (isFeatureEnabled('file_deletion')): ?>
                     <button type="button" class="btn btn-outline-danger"
@@ -479,16 +480,15 @@ $files = getOpenAPIFiles();
             <div class="notice-icon">
               <i class="fas fa-shield-alt"></i>
             </div>
-            <h4 class="notice-title">Listagem de Arquivos Desabilitada</h4>
+            <h4 class="notice-title"><?php echo t('file_listing_disabled'); ?></h4>
           </div>
           <p class="notice-description">
-            Por questões de segurança, a listagem de arquivos está desabilitada em ambiente de produção. 
-            Esta é uma medida de proteção para evitar exposição de informações sensíveis.
+            <?php echo t('production_notice_description'); ?>
           </p>
           <div class="notice-actions">
             <button class="btn btn-warning" onclick="showProductionInfo()">
               <i class="fas fa-info-circle me-2"></i>
-              Saiba Mais
+              <?php echo t('learn_more'); ?>
             </button>
           </div>
         </div>
@@ -499,30 +499,41 @@ $files = getOpenAPIFiles();
 
   <!-- Security Modal -->
   <div class="modal fade" id="securityModal" tabindex="-1" aria-labelledby="securityModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="securityModalLabel">
-            <i class="fas fa-shield-alt me-2"></i>
-            Security Audit Report
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-fullscreen-xl-down modal-xl">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
+          <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+            <div class="bg-primary w-100 h-100 gradient-bg-purple"></div>
+          </div>
+          <div class="d-flex align-items-center position-relative z-index-2 w-100">
+            <div class="flex-grow-1">
+              <h5 class="modal-title mb-1 fw-bold" id="securityModalLabel">
+                <i class="fas fa-shield-alt me-2"></i>
+                <?php echo t('security_audit'); ?>
+              </h5>
+              <small class="opacity-75"><?php echo t('security_audit_description'); ?></small>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
         </div>
         <div class="modal-body">
           <div id="security-report-content">
             <div class="text-center py-4">
               <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+                <span class="visually-hidden"><?php echo t('loading'); ?></span>
               </div>
-              <p class="mt-2">Analyzing security...</p>
+              <p class="mt-2"><?php echo t('analyzing_security'); ?></p>
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="securityManager.exportAuditResults()">
-            <i class="fas fa-download me-1"></i>
-            Export Report
+        <div class="modal-footer border-0 bg-light px-4 py-3 d-flex justify-content-end gap-3">
+          <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+            <i class="fas fa-times me-2"></i>
+            <?php echo t('close'); ?>
+          </button>
+          <button type="button" class="btn btn-save" onclick="securityManager.exportAuditResults()">
+            <i class="fas fa-download me-2"></i>
+            <?php echo t('export_report'); ?>
           </button>
         </div>
       </div>
@@ -547,11 +558,7 @@ $files = getOpenAPIFiles();
       }
     }
 
-    // Development logging
-    <?php if (APP_DEBUG): ?>
-      console.log('🏠 OpenAPI Editor Home Page loaded');
-      console.log('⚙️ Config:', window.AppConfig);
-    <?php endif; ?>
+
   </script>
 </body>
 </html>

@@ -6,32 +6,35 @@ $tags = $openApiData['tags'] ?? [];
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-tags me-2"></i>
-                    <?php echo t('tags'); ?> - Organização das Tags
-                </h5>
-                <button type="button" class="btn btn-success btn-sm" onclick="addTag()">
-                    <i class="fas fa-plus"></i>
-                    Adicionar Tag
+            <div class="card-header component-header-gradient d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-tags me-2"></i>
+                        <?php echo t('tags'); ?> - <?php echo t('tags_organization'); ?>
+                    </h5>
+                    <p class="mb-0"><?php echo t('tags_description'); ?></p>
+                </div>
+                <button type="button" class="btn btn-light btn-sm" onclick="addTag()">
+                    <i class="fas fa-plus me-2"></i>
+                    <?php echo t('add_new'); ?> Tag
                 </button>
             </div>
             <div class="card-body">
-                <form method="POST" id="tags-form">
+                <form method="POST" id="tags-form" onsubmit="return serializeDataBeforeSubmit(this);">
                     <input type="hidden" name="save_section" value="1">
                     <input type="hidden" name="section" value="tags">
                     
                     <div id="tags-container">
                         <?php if (empty($tags)): ?>
-                            <div class="alert alert-info">
+                                                        <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>
-                                As tags ajudam a organizar e agrupar os endpoints da sua API. Adicione tags para categorizar suas operações.
+                                <?php echo t('no_tags_yet'); ?>
                             </div>
                         <?php else: ?>
                             <?php foreach ($tags as $index => $tag): ?>
                                 <div class="tag-item border rounded p-3 mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h6 class="mb-0">Tag #<?php echo $index + 1; ?></h6>
+                                        <h6 class="mb-0"><?php echo t('tag_number') . ($index + 1); ?></h6>
                                         <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeTag(this)">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -39,14 +42,14 @@ $tags = $openApiData['tags'] ?? [];
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="mb-3">
-                                                <label class="form-label">Nome da Tag</label>
+                                                <label class="form-label"><?php echo t('tag_name'); ?></label>
                                                 <input type="text" class="form-control" name="tags[<?php echo $index; ?>][name]" 
                                                        value="<?php echo htmlspecialchars($tag['name'] ?? ''); ?>" required>
                                             </div>
                                         </div>
                                         <div class="col-md-8">
                                             <div class="mb-3">
-                                                <label class="form-label">Descrição</label>
+                                                <label class="form-label"><?php echo t('tag_description'); ?></label>
                                                 <input type="text" class="form-control" name="tags[<?php echo $index; ?>][description]" 
                                                        value="<?php echo htmlspecialchars($tag['description'] ?? ''); ?>">
                                             </div>
@@ -57,14 +60,14 @@ $tags = $openApiData['tags'] ?? [];
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">URL da Documentação Externa</label>
+                                                    <label class="form-label"><?php echo t('external_docs_url'); ?></label>
                                                     <input type="url" class="form-control" name="tags[<?php echo $index; ?>][externalDocs][url]" 
                                                            value="<?php echo htmlspecialchars($tag['externalDocs']['url'] ?? ''); ?>">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Descrição da Documentação</label>
+                                                    <label class="form-label"><?php echo t('external_docs_description'); ?></label>
                                                     <input type="text" class="form-control" name="tags[<?php echo $index; ?>][externalDocs][description]" 
                                                            value="<?php echo htmlspecialchars($tag['externalDocs']['description'] ?? ''); ?>">
                                                 </div>
@@ -77,8 +80,8 @@ $tags = $openApiData['tags'] ?? [];
                     </div>
                     
                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>
+                        <button type="submit" class="btn btn-component-save">
+                            <i class="fas fa-check me-2"></i>
                             Salvar Tags
                         </button>
                     </div>
@@ -104,7 +107,7 @@ function addTag() {
     newTag.className = 'tag-item border rounded p-3 mb-3';
     newTag.innerHTML = `
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="mb-0">Tag #${tagIndex + 1}</h6>
+            <h6 class="mb-0"><?php echo t('tag_number'); ?>${tagIndex + 1}</h6>
             <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeTag(this)">
                 <i class="fas fa-trash"></i>
             </button>
@@ -112,13 +115,13 @@ function addTag() {
         <div class="row">
             <div class="col-md-4">
                 <div class="mb-3">
-                    <label class="form-label">Nome da Tag</label>
+                    <label class="form-label"><?php echo t('tag_name'); ?></label>
                     <input type="text" class="form-control" name="tags[${tagIndex}][name]" required>
                 </div>
             </div>
             <div class="col-md-8">
                 <div class="mb-3">
-                    <label class="form-label">Descrição</label>
+                    <label class="form-label"><?php echo t('tag_description'); ?></label>
                     <input type="text" class="form-control" name="tags[${tagIndex}][description]">
                 </div>
             </div>
@@ -126,13 +129,13 @@ function addTag() {
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label class="form-label">URL da Documentação Externa (opcional)</label>
+                    <label class="form-label"><?php echo t('external_docs_url'); ?> (opcional)</label>
                     <input type="url" class="form-control" name="tags[${tagIndex}][externalDocs][url]">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label class="form-label">Descrição da Documentação (opcional)</label>
+                    <label class="form-label"><?php echo t('external_docs_description'); ?> (opcional)</label>
                     <input type="text" class="form-control" name="tags[${tagIndex}][externalDocs][description]">
                 </div>
             </div>
@@ -162,5 +165,62 @@ function updateTagNumbers() {
         const header = tag.querySelector('h6');
         header.textContent = `Tag #${index + 1}`;
     });
+}
+
+// Função específica para serializar tags (incluída diretamente no componente)
+function serializeTagsData() {
+    const tagItems = document.querySelectorAll('.tag-item');
+    const tags = [];
+    
+    tagItems.forEach((item, index) => {
+        const nameInput = item.querySelector('input[name*="[name]"]');
+        const descInput = item.querySelector('input[name*="[description]"]');
+        const urlInput = item.querySelector('input[name*="[url]"]');
+        const docDescInput = item.querySelector('input[name*="[externalDocs][description]"]');
+        
+        const name = nameInput?.value?.trim();
+        if (name) {
+            const tag = { name };
+            
+            const description = descInput?.value?.trim();
+            if (description) {
+                tag.description = description;
+            }
+            
+            const url = urlInput?.value?.trim();
+            const docDesc = docDescInput?.value?.trim();
+            if (url || docDesc) {
+                tag.externalDocs = {};
+                if (url) tag.externalDocs.url = url;
+                if (docDesc) tag.externalDocs.description = docDesc;
+            }
+            
+            tags.push(tag);
+        }
+    });
+    
+    const form = document.getElementById('tags-form');
+    let tagsField = form.querySelector('input[name="tags_data"]');
+    if (!tagsField) {
+        tagsField = document.createElement('input');
+        tagsField.type = 'hidden';
+        tagsField.name = 'tags_data';
+        form.appendChild(tagsField);
+    }
+    
+    const tagsJson = JSON.stringify(tags);
+    tagsField.value = tagsJson;
+    
+    return true;
+}
+
+// Sobrescrever a função global se existir
+function serializeDataBeforeSubmit(form) {
+    const section = form.querySelector('input[name="section"]')?.value;
+    
+    if (section === 'tags') {
+        return serializeTagsData();
+    }
+    return true;
 }
 </script>

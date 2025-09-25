@@ -164,20 +164,23 @@ function renderSchemaCard($schemaName, $schemaData) {
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-sitemap me-2"></i>
-                    <?php echo t('schemas'); ?> - Definição de Esquemas
-                </h5>
-                <button type="button" class="btn btn-success btn-sm" onclick="addSchema()">
-                    <i class="fas fa-plus"></i>
-                    Adicionar Schema
+            <div class="card-header component-header-gradient d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-sitemap me-2"></i>
+                        <?php echo t('schemas'); ?> - <?php echo t('schema_definition'); ?>
+                    </h5>
+                    <p class="mb-0"><?php echo t('schemas_description'); ?></p>
+                </div>
+                <button type="button" class="btn btn-light btn-sm" onclick="showSchemaModal()">
+                    <i class="fas fa-plus me-2"></i>
+                    <?php echo t('add_schema'); ?>
                 </button>
             </div>
             <div class="card-body">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    Os esquemas definem a estrutura dos dados utilizados pela sua API. Eles são referenciados nos requests e responses e garantem consistência na documentação.
+                    <?php echo t('schemas_info'); ?>
                 </div>
                 
                 <form method="POST" id="schemas-form">
@@ -190,8 +193,8 @@ function renderSchemaCard($schemaName, $schemaData) {
                                 <div class="mb-4">
                                     <i class="fas fa-sitemap display-1 text-muted"></i>
                                 </div>
-                                <h4 class="text-muted">Nenhum esquema definido</h4>
-                                <p class="text-muted mb-4">Esquemas definem a estrutura dos seus dados. Comece criando seu primeiro esquema!</p>
+                                <h4 class="text-muted"><?php echo t('no_schemas_defined'); ?></h4>
+                                <p class="text-muted mb-4"><?php echo t('schemas_help'); ?></p>
                                 <button type="button" class="btn btn-primary btn-lg" onclick="showSchemaModal()">
                                     <i class="fas fa-plus me-2"></i>
                                     Criar Primeiro Esquema
@@ -204,13 +207,9 @@ function renderSchemaCard($schemaName, $schemaData) {
                         <?php endif; ?>
                     </div>
                     
-                    <div class="mt-4 d-flex justify-content-between">
-                        <button type="button" class="btn btn-success" onclick="showSchemaModal()">
-                            <i class="fas fa-plus me-1"></i>
-                            Adicionar Esquema
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>
+                    <div class="mt-4 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-component-save">
+                            <i class="fas fa-check me-2"></i>
                             Salvar Esquemas
                         </button>
                     </div>
@@ -232,14 +231,22 @@ function renderSchemaCard($schemaName, $schemaData) {
 
 <!-- Modal para Criação/Edição de Schema -->
 <div class="modal fade" id="schemaModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-cube me-2"></i>
-                    <span id="modal-title">Criar Esquema</span>
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-fullscreen-xl-down modal-xl">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+                    <div class="bg-primary w-100 h-100 gradient-bg-purple"></div>
+                </div>
+                <div class="d-flex align-items-center position-relative z-index-2 w-100">
+                    <div class="flex-grow-1">
+                        <h5 class="modal-title mb-1 fw-bold">
+                            <i class="fas fa-cube me-2"></i>
+                            <span id="modal-title">Configurar Esquema</span>
+                        </h5>
+                        <small class="opacity-75">Defina as estruturas de dados da sua API</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
             </div>
             <div class="modal-body">
                 <form id="schema-form">
@@ -266,7 +273,7 @@ function renderSchemaCard($schemaName, $schemaData) {
                             </div>
                             
                             <!-- Configurações específicas para string -->
-                            <div id="string-options" style="display: none;">
+                            <div id="string-options" class="schema-type-options">
                                 <div class="mb-3">
                                     <label class="form-label">Formato</label>
                                     <select class="form-select" id="schema-format">
@@ -298,7 +305,7 @@ function renderSchemaCard($schemaName, $schemaData) {
                             </div>
                             
                             <!-- Configurações específicas para number/integer -->
-                            <div id="number-options" style="display: none;">
+                            <div id="number-options" class="schema-type-options">
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="mb-3">
@@ -325,7 +332,7 @@ function renderSchemaCard($schemaName, $schemaData) {
                             </div>
                             
                             <!-- Configurações específicas para array -->
-                            <div id="array-options" style="display: none;">
+                            <div id="array-options" class="schema-type-options">
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="mb-3">
@@ -392,10 +399,13 @@ function renderSchemaCard($schemaName, $schemaData) {
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="saveSchema()">
-                    <i class="fas fa-save me-1"></i>
+            <div class="modal-footer border-0 bg-light px-4 py-3 d-flex justify-content-end gap-3">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-save" onclick="saveSchema()">
+                    <i class="fas fa-check me-2"></i>
                     Salvar Esquema
                 </button>
             </div>
@@ -405,23 +415,34 @@ function renderSchemaCard($schemaName, $schemaData) {
 
 <!-- Modal para Visualizar Exemplo -->
 <div class="modal fade" id="exampleModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-eye me-2"></i>
-                    Exemplo de Dados
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-fullscreen-xl-down modal-xl">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header modal-header-gradient text-white position-relative overflow-hidden">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+                    <div class="bg-primary w-100 h-100 gradient-bg-purple"></div>
+                </div>
+                <div class="d-flex align-items-center position-relative z-index-2 w-100">
+                    <div class="flex-grow-1">
+                        <h5 class="modal-title mb-1 fw-bold">
+                            <i class="fas fa-eye me-2"></i>
+                            Exemplo de Dados
+                        </h5>
+                        <small class="opacity-75">Visualize como os dados ficam estruturados</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
             </div>
             <div class="modal-body">
                 <div id="example-content"></div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" onclick="copyExample()">
-                    <i class="fas fa-copy me-1"></i>
-                    Copiar
+            <div class="modal-footer border-0 bg-light px-4 py-3 d-flex justify-content-end gap-3">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Fechar
+                </button>
+                <button type="button" class="btn btn-save" onclick="copyExample()">
+                    <i class="fas fa-copy me-2"></i>
+                    Copiar Exemplo
                 </button>
             </div>
         </div>
@@ -447,7 +468,9 @@ function showSchemaModal(schemaName = null) {
         resetSchemaForm();
     }
     
-    new bootstrap.Modal(document.getElementById('schemaModal')).show();
+    // Usar getOrCreateInstance para evitar conflitos
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('schemaModal'));
+    modal.show();
     updatePreview();
 }
 
@@ -510,18 +533,18 @@ function handleTypeChange() {
     const type = document.getElementById('schema-type').value;
     
     // Esconder todas as opções específicas
-    document.getElementById('string-options').style.display = 'none';
-    document.getElementById('number-options').style.display = 'none';
-    document.getElementById('array-options').style.display = 'none';
+    document.getElementById('string-options').classList.remove('show');
+    document.getElementById('number-options').classList.remove('show');
+    document.getElementById('array-options').classList.remove('show');
     document.getElementById('object-properties').style.display = 'none';
     
     // Mostrar opções relevantes
     if (type === 'string') {
-        document.getElementById('string-options').style.display = 'block';
+        document.getElementById('string-options').classList.add('show');
     } else if (type === 'number' || type === 'integer') {
-        document.getElementById('number-options').style.display = 'block';
+        document.getElementById('number-options').classList.add('show');
     } else if (type === 'array') {
-        document.getElementById('array-options').style.display = 'block';
+        document.getElementById('array-options').classList.add('show');
     } else if (type === 'object') {
         document.getElementById('object-properties').style.display = 'block';
     }
@@ -759,7 +782,8 @@ function saveSchema() {
     currentSchemas[schemaName] = schema;
     
     // Fechar modal
-    bootstrap.Modal.getInstance(document.getElementById('schemaModal')).hide();
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('schemaModal'));
+    modal.hide();
     
     // Recarregar interface
     refreshSchemasDisplay();
