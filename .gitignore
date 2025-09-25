@@ -52,7 +52,7 @@ files/*.yaml
 files/*.yml
 
 # Manter apenas o arquivo de exemplo da API
-!files/swagger.json
+!files/example.json
 
 # Manter estrutura de diretórios
 !files/.gitkeep

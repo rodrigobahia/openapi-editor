@@ -49,8 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               $showConfirmUpload = $uploadedFile['name'];
             } else {
               if (move_uploaded_file($uploadedFile['tmp_name'], $targetPath)) {
-                $message = t('success_uploaded');
-                $messageType = 'success';
+                // Regra padrão: sempre redirecionar para o editor após upload
+                header('Location: editor.php?file=' . urlencode($uploadedFile['name']));
+                exit;
               } else {
                 $message = t('error_upload');
                 $messageType = 'danger';
