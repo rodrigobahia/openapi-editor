@@ -236,7 +236,7 @@ $files = getOpenAPIFiles();
           </li>
           <li class="nav-item">
             <a class="nav-link" href="https://github.com/rodrigobahia/openapi-editor" target="_blank">
-              <i class="fas fa-github me-1"></i>
+              <i class="fab fa-github me-1"></i>
               Github
             </a>
           </li>
