@@ -559,6 +559,12 @@ function addNewTag() {
 
 // Disponibilizar dados do OpenAPI globalmente para JavaScript
 const openApiData = <?php echo json_encode($openApiData); ?>;
+
+// Inicializar window.openApiSpec com os dados do PHP
+if (!window.openApiSpec) {
+    window.openApiSpec = JSON.parse(JSON.stringify(openApiData)); // Deep copy
+}
+
 let availableTags = new Set();
 let currentFilter = '';
 
@@ -690,10 +696,18 @@ function editEndpoint(button) {
 
 // Nova função para carregar dados do endpoint
 function loadEndpointData(path, method) {
-    // Acessar dados globais do PHP (se disponível)
-    if (typeof openApiData !== 'undefined' && openApiData.paths && openApiData.paths[path] && openApiData.paths[path][method]) {
-        const operation = openApiData.paths[path][method];
-        
+    let operation = null;
+    
+    // Primeiro, tentar acessar dados do window.openApiSpec (dados atualizados do JS)
+    if (window.openApiSpec && window.openApiSpec.paths && window.openApiSpec.paths[path] && window.openApiSpec.paths[path][method]) {
+        operation = window.openApiSpec.paths[path][method];
+    }
+    // Fallback: acessar dados globais do PHP (se disponível)
+    else if (typeof openApiData !== 'undefined' && openApiData.paths && openApiData.paths[path] && openApiData.paths[path][method]) {
+        operation = openApiData.paths[path][method];
+    }
+    
+    if (operation) {
         // Preencher campos básicos
         document.getElementById('endpoint-method').value = method;
         document.getElementById('endpoint-path').value = path;
@@ -726,7 +740,10 @@ function loadEndpointData(path, method) {
         
     } else {
         // Fallback: tentar extrair dados do DOM
-        loadEndpointDataFromDOM(button.closest('.endpoint-group'));
+        const endpointGroup = document.querySelector(`[data-path="${path}"][data-method="${method}"]`);
+        if (endpointGroup) {
+            loadEndpointDataFromDOM(endpointGroup);
+        }
     }
 }
 
@@ -1169,49 +1186,67 @@ function clearAllContainers() {
 
 function serializeDataBeforeSubmit(form) {
     try {
-        const endpoints = document.querySelectorAll('.endpoint-group');
-        const pathsData = {};
-        endpoints.forEach(endpoint => {
-            const path = endpoint.getAttribute('data-path');
-            const method = endpoint.getAttribute('data-method');
-            if (path && method) {
-                if (!pathsData[path]) pathsData[path] = {};
-                
-                // Extrair summary (primeiro div com text-muted small)
-                const summaryEl = endpoint.querySelector('.text-muted.small');
-                const summary = summaryEl ? summaryEl.textContent.trim() : '';
-                
-                // Extrair description (segundo div com text-muted small mt-1, se existir)
-                const descriptionEl = endpoint.querySelector('.text-muted.small.mt-1');
-                const description = descriptionEl ? descriptionEl.textContent.trim() : '';
-                
-                // Extrair tags (badges bg-secondary)
-                const tagBadges = endpoint.querySelectorAll('.badge.bg-secondary');
-                const tags = Array.from(tagBadges).map(badge => badge.textContent.trim());
-                
-                // Extrair parâmetros do atributo data-parameters
-                let params = [];
-                try {
-                    const parametersAttr = endpoint.getAttribute('data-parameters');
-                    if (parametersAttr) {
-                        params = JSON.parse(parametersAttr);
+        // Usar dados do window.openApiSpec se disponível (contém as alterações mais recentes)
+        let pathsData = {};
+        
+        if (window.openApiSpec && window.openApiSpec.paths) {
+            pathsData = JSON.parse(JSON.stringify(window.openApiSpec.paths)); // Deep copy
+        } else {
+            // Fallback: extrair dados do DOM
+            const endpoints = document.querySelectorAll('.endpoint-group');
+            endpoints.forEach(endpoint => {
+                const path = endpoint.getAttribute('data-path');
+                const method = endpoint.getAttribute('data-method');
+                if (path && method) {
+                    if (!pathsData[path]) pathsData[path] = {};
+                    
+                    // Extrair summary (primeiro div com text-muted small)
+                    const summaryEl = endpoint.querySelector('.text-muted.small');
+                    const summary = summaryEl ? summaryEl.textContent.trim() : '';
+                    
+                    // Extrair description (segundo div com text-muted small mt-1, se existir)
+                    const descriptionEl = endpoint.querySelector('.text-muted.small.mt-1');
+                    const description = descriptionEl ? descriptionEl.textContent.trim() : '';
+                    
+                    // Extrair tags (badges bg-secondary)
+                    const tagBadges = endpoint.querySelectorAll('.badge.bg-secondary');
+                    const tags = Array.from(tagBadges).map(badge => badge.textContent.trim());
+                    
+                    // Extrair parâmetros do atributo data-parameters
+                    let params = [];
+                    try {
+                        const parametersAttr = endpoint.getAttribute('data-parameters');
+                        if (parametersAttr) {
+                            params = JSON.parse(parametersAttr);
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao parsear parâmetros do endpoint:', e);
+                        params = [];
                     }
-                } catch (e) {
-                    console.warn('Erro ao parsear parâmetros do endpoint:', e);
-                    params = [];
-                }
-                
-                pathsData[path][method] = {
-                    summary: summary,
-                    description: description,
-                    tags: tags,
-                    parameters: params,
-                    responses: {
+                    
+                    // Tentar obter responses do window.openApiSpec primeiro
+                    let responses = {
                         "200": { "description": "Successful response" }
+                    };
+                    
+                    if (window.openApiSpec && window.openApiSpec.paths && 
+                        window.openApiSpec.paths[path] && 
+                        window.openApiSpec.paths[path][method] && 
+                        window.openApiSpec.paths[path][method].responses) {
+                        responses = window.openApiSpec.paths[path][method].responses;
                     }
-                };
-            }
-        });
+                    
+                    pathsData[path][method] = {
+                        summary: summary,
+                        description: description,
+                        tags: tags,
+                        parameters: params,
+                        responses: responses
+                    };
+                }
+            });
+        }
+        
         // Adicionar campo hidden com dados serializados
         let hiddenInput = form.querySelector('input[name="paths"]');
         if (!hiddenInput) {
@@ -1269,8 +1304,48 @@ function saveEndpoint() {
         }
     });
     
+    // Coletar responses do modal
+    const responses = {};
+    const usedCodes = new Set();
+    const responseItems = document.querySelectorAll('#responses-container .response-item');
+    responseItems.forEach(item => {
+        let code = item.querySelector('select[name="response_code[]"]').value.trim();
+        if (!code) return;
+        // Garante unicidade do status code
+        let originalCode = code;
+        let i = 2;
+        while (usedCodes.has(code)) {
+            code = originalCode + '_' + i;
+            i++;
+        }
+        usedCodes.add(code);
+        const contentType = item.querySelector('select[name="response_content_type[]"]').value;
+        const description = item.querySelector('input[name="response_description[]"]').value;
+        const schemaText = item.querySelector('textarea[name="response_schema[]"]').value;
+        const exampleText = item.querySelector('textarea[name="response_example[]"]').value;
+        let schema = undefined;
+        let example = undefined;
+        try {
+            schema = schemaText ? JSON.parse(schemaText) : undefined;
+        } catch (e) { schema = undefined; }
+        try {
+            example = exampleText ? JSON.parse(exampleText) : undefined;
+        } catch (e) { example = undefined; }
+        const responseObj = {
+            description: description || '',
+            content: {}
+        };
+        if (schema || example) {
+            responseObj.content[contentType] = { schema: schema || {} };
+            if (example !== undefined) {
+                responseObj.content[contentType].example = example;
+            }
+        }
+        responses[code] = responseObj;
+    });
+
     // Atualizar estrutura de dados OpenAPI
-    updateOpenAPIData(method, path, summary, description, tags, parameters);
+    updateOpenAPIData(method, path, summary, description, tags, parameters, responses);
     
     // Criar elemento do endpoint
     const endpointHtml = createEndpointHtml(method, path, summary, description, tags, parameters);
@@ -1294,9 +1369,8 @@ function saveEndpoint() {
     }
     
     // Atualizar tags disponíveis se novas tags foram adicionadas
-    if (tags) {
-        const tagsArray = tags.split(',').map(t => t.trim()).filter(t => t);
-        tagsArray.forEach(tag => availableTags.add(tag));
+    if (tags && Array.isArray(tags)) {
+        tags.forEach(tag => availableTags.add(tag));
         updateTagFilterMenu();
     }
     
@@ -1310,10 +1384,16 @@ function saveEndpoint() {
     
     // Limpar currentEndpoint após salvar
     currentEndpoint = null;
+
+    // Submeter o formulário principal para salvar no backend
+    const mainForm = document.getElementById('paths-form');
+    if (mainForm) {
+        mainForm.requestSubmit();
+    }
 }
 
 // Função para atualizar a estrutura de dados OpenAPI
-function updateOpenAPIData(method, path, summary, description, tags, parameters = []) {
+function updateOpenAPIData(method, path, summary, description, tags, parameters = [], responses = undefined) {
     // Inicializar estrutura global se não existir
     if (!window.openApiSpec) {
         window.openApiSpec = {
@@ -1337,29 +1417,32 @@ function updateOpenAPIData(method, path, summary, description, tags, parameters 
         summary: summary,
         operationId: path.replace(/[^a-zA-Z0-9]/g, '_') + '_' + method
     };
-    
     if (description) {
         operation.description = description;
     }
-    
-    if (tags) {
-        const tagsArray = tags.split(',').map(t => t.trim()).filter(t => t);
-        if (tagsArray.length > 0) {
-            operation.tags = tagsArray;
-        }
+    if (tags && Array.isArray(tags) && tags.length > 0) {
+        operation.tags = tags;
     }
-    
     if (parameters && parameters.length > 0) {
         operation.parameters = parameters;
     }
-    
-    // Adicionar responses padrão
-    operation.responses = {
-        "200": {
-            "description": "Successful response"
+    // Usar responses coletados do modal, se fornecidos
+    if (responses && Object.keys(responses).length > 0) {
+        operation.responses = responses;
+    } else {
+        // Preservar responses existentes, se houver
+        const existing = window.openApiSpec.paths[path][method.toLowerCase()];
+        if (existing && existing.responses) {
+            operation.responses = { ...existing.responses };
+        } else {
+            // Adicionar responses padrão apenas se não houver nenhum
+            operation.responses = {
+                "200": {
+                    "description": "Successful response"
+                }
+            };
         }
-    };
-    
+    }
     // Salvar a operação no método especificado
     window.openApiSpec.paths[path][method.toLowerCase()] = operation;
     
@@ -1372,18 +1455,18 @@ function updateOpenAPIData(method, path, summary, description, tags, parameters 
 function createEndpointHtml(method, path, summary, description, tags, parameters = []) {
     const methodColor = getMethodColorJS(method);
     const operationId = path + '_' + method;
-    const tagsArray = tags ? tags.split(',').map(t => t.trim()).filter(t => t) : [];
-    
+    const tagsArray = (tags && Array.isArray(tags)) ? tags : [];
+
     let tagsHtml = '';
     if (tagsArray.length > 0) {
-        tagsHtml = '<div class="mt-2">' + 
-            tagsArray.map(tag => `<span class="badge bg-secondary me-1">${escapeHtml(tag)}</span>`).join('') + 
+        tagsHtml = '<div class="mt-2">' +
+            tagsArray.map(tag => `<span class="badge bg-secondary me-1">${escapeHtml(tag)}</span>`).join('') +
             '</div>';
     }
-    
+
     // Criar dados estruturados dos parâmetros para serialização
     const parametersData = JSON.stringify(parameters);
-    
+
     return `
         <div class="endpoint-group border rounded p-3 mb-4" data-path="${escapeHtml(path)}" data-method="${method}" data-parameters='${parametersData}'>
             <div class="d-flex justify-content-between align-items-start mb-3">
